@@ -1,13 +1,24 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* ============================================================
+   Global styles
+   Imports tokens + reset, then sets base html/body appearance
+   using tokens only. No component styles live here.
+   ============================================================ */
+@import './tokens.css';
+@import './reset.css';
+
+html,
+body {
+  min-height: 100vh;
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
   background-color: var(--sr-color-bg);
   color: var(--sr-color-text);
-  font-family: system-ui, sans-serif;
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-md);
+}
+
+:focus-visible {
+  outline: var(--sr-border-width-md) solid var(--sr-color-accent);
+  outline-offset: 2px;
 }

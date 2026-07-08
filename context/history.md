@@ -4,6 +4,15 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-08 — Feature 02: Design Token Foundation
+
+- Built out the full token set in `src/styles/tokens.css`: color, typography, spacing, radius, border, shadow, motion, z-index, and layout-width groups, all `--sr-` prefixed and semantically named, each with a short comment block.
+- Added a `prefers-reduced-motion` media query in `tokens.css` that zeroes out the motion tokens.
+- Added `src/styles/reset.css`, a minimal CSS reset.
+- Consolidated `src/styles/global.css` to `@import` tokens + reset and set base `html`/`body` styles (background, text, font) from tokens only, plus a token-based `:focus-visible` outline.
+- Wired the single global stylesheet into both `src/main.tsx` and `.storybook/preview.tsx` so the app and Storybook render identically.
+- Verified with `npm run typecheck`, `npm run lint`, `npm run build`, `npm run build-storybook`; confirmed the compiled CSS output is byte-identical between the app and Storybook builds, and cross-checked live via Playwright screenshots of the running dev server and a Storybook story (matching background/text colors, no console errors).
+
 ### 2026-07-08 — Feature 01: Project Foundation
 
 - Scaffolded a Vite + React + TypeScript (strict mode) app with the base `src/` folder structure (`app`, `components/{atoms,molecules,organisms,templates}`, `data`, `hooks`, `services`, `styles`, `test`, `types`, `utils`) and a placeholder `src/styles/tokens.css`.
