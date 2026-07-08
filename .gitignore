@@ -6,3 +6,5 @@ storybook-static
 .DS_Store
 *.log
 coverage
+.claude
+*storybook.log
