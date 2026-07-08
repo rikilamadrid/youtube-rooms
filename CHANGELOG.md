@@ -19,6 +19,9 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 - Base `src/` folder structure (`app`, `components/{atoms,molecules,organisms,templates}`, `data`, `hooks`, `services`, `styles`, `test`, `types`, `utils`) and a placeholder `src/styles/tokens.css`.
 - npm scripts: `dev`, `storybook`, `test`, `test:watch`, `lint`, `typecheck`, `build`, `build-storybook`.
 - GitHub Actions CI workflow running typecheck, lint, test, build, and Storybook build on push/PR.
+- Full design token set in `src/styles/tokens.css` (color, typography, spacing, radius, border, shadow, motion, z-index, layout widths) using `--sr-` prefixed semantic names, plus a `prefers-reduced-motion` fallback that neutralizes motion tokens.
+- `src/styles/reset.css`, a minimal CSS reset.
+- `src/styles/global.css` now imports tokens + reset and sets base `html`/`body` styles (including a token-based `:focus-visible` outline) from tokens only; imported by both the app entry (`src/main.tsx`) and Storybook's `.storybook/preview.tsx` so both surfaces render identically.
 
 ### Changed
 

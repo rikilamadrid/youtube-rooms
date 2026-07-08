@@ -1,5 +1,80 @@
-/* Design tokens placeholder. Full token set lands in feature 02. */
+/* ============================================================
+   Design Tokens
+   Dark-first token set for SubRooms. Every token uses the
+   `--sr-` prefix and is named semantically, not literally
+   (e.g. `--sr-color-accent`, not `--sr-color-purple`).
+   ============================================================ */
+
 :root {
+  /* Color
+     Background/surface layers, text, borders, and accent hues. */
   --sr-color-bg: #0f1117;
+  --sr-color-surface: #171a23;
+  --sr-color-surface-raised: #202433;
   --sr-color-text: #f5f7fb;
+  --sr-color-text-muted: #a9b0c3;
+  --sr-color-border: rgba(255, 255, 255, 0.12);
+  --sr-color-accent: #7c8cff;
+  --sr-color-accent-strong: #aab3ff;
+
+  /* Typography
+     Base font family and a small, purposeful type scale. */
+  --sr-font-family-base: Inter, ui-sans-serif, system-ui, sans-serif;
+  --sr-font-size-sm: 0.875rem;
+  --sr-font-size-md: 1rem;
+  --sr-font-size-lg: 1.125rem;
+  --sr-font-size-xl: 1.5rem;
+
+  /* Spacing
+     4px-based scale for padding, gaps, and margins. */
+  --sr-space-1: 0.25rem;
+  --sr-space-2: 0.5rem;
+  --sr-space-3: 0.75rem;
+  --sr-space-4: 1rem;
+  --sr-space-6: 1.5rem;
+  --sr-space-8: 2rem;
+
+  /* Radius
+     Corner rounding from subtle to fully pill-shaped. */
+  --sr-radius-sm: 0.5rem;
+  --sr-radius-md: 0.875rem;
+  --sr-radius-lg: 1.25rem;
+  --sr-radius-pill: 999px;
+
+  /* Border
+     Shared border widths for outlines and dividers. */
+  --sr-border-width-sm: 1px;
+  --sr-border-width-md: 2px;
+
+  /* Shadow
+     Elevation for raised surfaces like cards and menus. */
+  --sr-shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.28);
+
+  /* Motion
+     Durations/easings for transitions and feedback. */
+  --sr-motion-fast: 120ms ease;
+  --sr-motion-base: 180ms ease;
+
+  /* Z-index
+     Stacking order for layered UI. */
+  --sr-z-index-base: 0;
+  --sr-z-index-dropdown: 10;
+  --sr-z-index-overlay: 20;
+  --sr-z-index-modal: 30;
+  --sr-z-index-toast: 40;
+
+  /* Layout widths
+     Max-widths for content containers at common breakpoints. */
+  --sr-layout-width-sm: 640px;
+  --sr-layout-width-md: 960px;
+  --sr-layout-width-lg: 1200px;
+}
+
+/* Reduced motion
+   Neutralize motion tokens so transitions become effectively instant. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sr-motion-fast: 0ms;
+    --sr-motion-base: 0ms;
+  }
 }
