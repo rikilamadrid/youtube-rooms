@@ -20,6 +20,10 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 - npm scripts: `dev`, `storybook`, `test`, `test:watch`, `lint`, `typecheck`, `build`, `build-storybook`.
 - GitHub Actions CI workflow running typecheck, lint, test, build, and Storybook build on push/PR.
 
+### Changed
+
+- Clarified the remote merge workflow in `CLAUDE.md` and `context/ai-interaction.md`: push branch, open PR, merge on remote via `gh pr merge`, then sync `main` locally — each step is a separate checkpoint requiring confirmation.
+
 ## [0.1.0] - 2026-07-07
 
 ### Added

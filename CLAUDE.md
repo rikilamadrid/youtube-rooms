@@ -63,7 +63,10 @@ Then:
 6. Run verification commands.
 7. Update `CHANGELOG.md` under `## [Unreleased]`.
 8. Ask before committing.
-9. After merge, update `context/current-feature.md` and `context/history.md`.
+9. Push the branch and open a pull request (ask first).
+10. Once the user gives the go-ahead, merge the PR on the remote via `gh pr merge` (ask first).
+11. Pull `main` locally to sync, then delete the merged local branch.
+12. Update `context/current-feature.md` and `context/history.md`.
 
 ## Commands
 
@@ -93,6 +96,9 @@ Add or adjust scripts once the repo exists.
 - Ask before committing.
 - Build must pass before commit.
 - Commit messages must not include AI attribution, co-author trailers, or generated-by footers.
+- Never commit or merge directly on `main`; land work through a pushed branch and a pull request.
+- Merge flow: push the local branch → open a PR → merge the PR on the remote (via `gh pr merge`, only after the user gives the go-ahead) → pull `main` locally to stay in sync.
+- Ask before pushing and before merging; do not chain push → PR → merge without checkpoints.
 
 ## Current Product Boundary
 

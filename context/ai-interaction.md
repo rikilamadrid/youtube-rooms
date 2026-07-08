@@ -38,9 +38,13 @@ Learning goal:
 11. Run typecheck, lint, test, build, and Storybook build when available.
 12. Add or update `CHANGELOG.md` under `## [Unreleased]`.
 13. Ask before committing.
-14. After merge, update `context/current-feature.md` and `context/history.md`.
+14. Ask, then push the branch and open a pull request.
+15. Once the user gives the go-ahead, merge the PR on the remote with `gh pr merge`.
+16. Pull `main` locally to sync, then delete the merged local branch.
+17. Update `context/current-feature.md` and `context/history.md`.
 
 Do not commit without permission, and do not commit if the build is failing.
+Do not push, open a PR, or merge without asking first, even though this is the standing workflow — each is a separate checkpoint.
 
 ## Pre-Implementation Restatement
 
@@ -62,6 +66,14 @@ This keeps the workflow deliberate and prevents scope creep.
 - Create a new branch for every feature or fix.
 - Use clear names like `feature/01-project-foundation` or `fix/video-card-focus-state`.
 - Do not work directly on `main` after the initial setup.
+
+## Remote Merge Flow
+
+- Never merge locally and never commit or merge directly on `main`.
+- Push the local branch to the remote, then open a pull request (ask first).
+- Merge happens on the remote: once the user gives the go-ahead, merge the PR with `gh pr merge` (ask first).
+- After the PR merges, pull `main` locally to stay in sync, then delete the now-merged local branch.
+- Treat push, PR creation, and merge as three separate checkpoints — do not chain them without confirmation between steps.
 
 ## Commits
 
