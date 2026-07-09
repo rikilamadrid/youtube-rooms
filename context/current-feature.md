@@ -4,9 +4,7 @@ Use this file as the live tracker for what is active now. Keep it lean. When a f
 
 ## Status
 
-Not Started
-
-<!-- Spec: `context/features/NN-feature-name.md` -->
+<!-- Not Started | In Progress | Complete -->
 
 ## Goals
 
@@ -20,7 +18,7 @@ Not Started
 
 ## Up next
 
-- 06 — Card primitive
+- 07 — Room card molecule
 
 ---
 
@@ -32,3 +30,4 @@ Not Started
 - Feature 03 — Storybook Foundations Catalog (2026-07-09): added `src/styles/foundations/` with an Introduction page describing SubRooms' design system and atomic-design organization, plus `Foundations/Color`, `Foundations/Typography`, and `Foundations/Spacing` stories rendering live `tokens.css` values (read via `getComputedStyle`, no restated literals) in a mobile-first grid/list layout; removed the default Storybook CLI boilerplate (`src/stories/` — Button, Header, Page). Verified `typecheck`, `lint`, `test`, and `build-storybook` all pass.
 - Feature 04 — Button Primitive (2026-07-09): built a token-driven `Button` atom (`src/components/atoms/Button/`) rendering a real `<button>` or, via `as="a"`/`href`, an anchor — using a TypeScript discriminated union so invalid prop shapes fail at compile time. Supports `primary`/`secondary`/`ghost` variants, `sm`/`md` sizes, `disabled`, an accessible `loading` state (`aria-busy`, spinner, preserved accessible name), and optional leading/trailing icons including icon-only usage via `aria-label`. Styled entirely from `--sr-*` tokens, with hover/active shades derived via `color-mix()` and `prefers-reduced-motion` handling for the spinner. Added Storybook stories for every state and RTL tests for role/name, mouse and keyboard activation, disabled, loading, anchor mode, and icon-only naming. Fixed a test-isolation bug by adding `afterEach(cleanup)` to `src/test/setup.ts`. Also added Vitest v8 coverage tooling (`@vitest/coverage-v8`, `npm run test:coverage`, HTML report under `coverage/`, ESLint ignore for the generated output). Verified `typecheck`, `lint`, `test`, `build`, and `build-storybook` all pass.
 - Feature 05 — Badge Primitive (2026-07-09): built a token-driven `Badge` atom (`src/components/atoms/Badge/`) — a non-interactive `<span>` for short status/metadata labels with `neutral`/`accent`/`success`/`warning` tones, an optional leading icon hidden from assistive tech (`aria-hidden`) so the label text stays the accessible name, and single-line text truncation (`text-overflow: ellipsis`) so long labels don't break layouts. Tone backgrounds/borders are derived from `--sr-*` tokens via `color-mix()` rather than new literal colors; added `--sr-color-success`, `--sr-color-success-strong`, `--sr-color-warning`, and `--sr-color-warning-strong` tokens to `tokens.css` (and to the `Foundations/Color` story). Added Storybook stories for every tone, with/without icon, and a long-text truncation example, plus RTL tests covering rendered text, default/explicit tone class application, and icon accessibility. Verified `typecheck`, `lint`, `test`, and `build` all pass.
+- Feature 06 — Card Primitive (2026-07-09): built a token-driven `Card` atom (`src/components/atoms/Card/`) — a generic, raised-surface container rendering a static `<div>` by default, or a real `<a>` (`as="a"`, requires `href`) or `<button>` (`as="button"`) when used as an interactive surface, enforced via a TypeScript discriminated union so a `div` variant can't accept an `onClick`. Supports a `none`/`sm`/`md`/`lg` `padding` prop (default `md`) built from spacing tokens, with background, border, radius, and shadow from `--sr-*` tokens; interactive cards get a hover tint and active-state scale, and rely on the existing global `:focus-visible` ring for keyboard focus rather than a bespoke one. Composition is generic via `children` — no assumed header/media/footer slots, deferred to the `RoomCard`/`VideoCard` molecules that will consume this primitive. Added Storybook stories for a static card, interactive-as-link, interactive-as-button, and varied content lengths, plus RTL tests covering default rendering, link/button role and element, and mouse/keyboard activation. Verified `typecheck`, `lint`, `test`, `build`, and `build-storybook` all pass.
