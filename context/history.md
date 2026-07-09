@@ -4,6 +4,17 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-09 — Feature 06: Card Primitive
+
+- Added a token-driven `Card` atom (`src/components/atoms/Card/`): a generic raised-surface container rendering a static `<div>` by default, or a real `<a>` (`as="a"`, requires `href`) or `<button>` (`as="button"`) when used as an interactive surface.
+- Prop shapes are enforced via a TypeScript discriminated union, so a `div` variant can't accept an `onClick`, and `as="a"` requires `href` at the type level (mirroring the `Button` primitive's approach).
+- Supports a `none`/`sm`/`md`/`lg` `padding` prop (default `md`) built from spacing tokens; background, border, radius, and shadow all come from `--sr-*` tokens.
+- Interactive cards get a hover tint and active-state scale, and reuse the existing global `:focus-visible` ring for keyboard focus rather than a bespoke one.
+- Composition is generic via `children` only — no assumed header/media/footer slots, deferring that structure to the `RoomCard`/`VideoCard` molecules that will consume this primitive.
+- Added Storybook stories for a static card, interactive-as-link, interactive-as-button, and varied content lengths.
+- Added RTL tests covering default rendering, link/button role and element, and mouse/keyboard activation.
+- Verified with `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build`, and `npm run build-storybook`.
+
 ### 2026-07-09 — Feature 05: Badge Primitive
 
 - Added a token-driven `Badge` atom (`src/components/atoms/Badge/`): a non-interactive `<span>` for short status/metadata labels, defaulting to a `neutral` tone with `accent`/`success`/`warning` alternatives.
