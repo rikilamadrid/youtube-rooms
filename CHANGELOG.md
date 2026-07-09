@@ -23,6 +23,8 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 - `src/styles/reset.css`, a minimal CSS reset.
 - `src/styles/global.css` now imports tokens + reset and sets base `html`/`body` styles (including a token-based `:focus-visible` outline) from tokens only; imported by both the app entry (`src/main.tsx`) and Storybook's `.storybook/preview.tsx` so both surfaces render identically.
 - Storybook foundations catalog under `src/styles/foundations/`: an "Introduction" page describing SubRooms' design system and atomic-design organization, plus `Foundations/Color`, `Foundations/Typography`, and `Foundations/Spacing` stories that render live `tokens.css` values (read via `getComputedStyle`) in a mobile-first grid/list layout.
+- `Button` atom (`src/components/atoms/Button/`): a token-driven, real `<button>` (or `<a>` via `as="a"`/`href`) with `primary`/`secondary`/`ghost` variants, `sm`/`md` sizes, an accessible `loading` state (`aria-busy`, spinner, preserved accessible name), `disabled` handling for both button and link usage, and an optional leading/trailing icon slot. Includes Storybook stories for all variants/sizes/states and RTL tests covering role/name, click firing, disabled and loading behavior.
+- `afterEach(cleanup)` in the Vitest setup (`src/test/setup.ts`) so multiple tests rendering the same accessible name in one file don't collide.
 
 ### Removed
 
