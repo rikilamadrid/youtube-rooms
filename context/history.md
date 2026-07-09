@@ -4,6 +4,13 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-09 — Feature 03: Storybook Foundations Catalog
+
+- Added `src/styles/foundations/` with an Introduction page describing SubRooms' design system and atomic-design organization, plus `Foundations/Color`, `Foundations/Typography`, and `Foundations/Spacing` stories.
+- All token demo stories read live values from `tokens.css` at render time (via `getComputedStyle`, no restated literals) in a mobile-first, low-visual-noise grid/list layout.
+- Removed the default Storybook CLI boilerplate (`src/stories/` — `Button`, `Header`, `Page` components and stories).
+- Verified with `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run build-storybook`.
+
 ### 2026-07-08 — Feature 02: Design Token Foundation
 
 - Built out the full token set in `src/styles/tokens.css`: color, typography, spacing, radius, border, shadow, motion, z-index, and layout-width groups, all `--sr-` prefixed and semantically named, each with a short comment block.
