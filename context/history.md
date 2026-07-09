@@ -4,6 +4,26 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-09 — Feature 07: RoomCard Molecule
+
+- Added the `Room` domain type (`src/types/room.ts`), matching the `Room` contract in `context/project-overview.md`.
+- Added the `RoomCard` molecule (`src/components/molecules/RoomCard/`), composing `Card` and `Badge` to represent a `Room` as an interactive, route-agnostic surface: `href` renders a link, `onClick` alone renders a button.
+- Renders the room name, an optional two-line-clamped description, and a channel-count `Badge` derived from an optional `channelCount` prop or `room.channelIds.length`, with a distinct "No channels yet" guidance state instead of "0 channels".
+- Renders an optional icon slot resolved from `iconName`, falling back to the room name's initial; the interactive surface has an explicit accessible name (`Open {name} room`).
+- Added Storybook stories for a typical room, empty-channel room, long name/description, with/without icon, and button usage.
+- Added RTL tests covering rendered content, accessible name, link/button rendering, keyboard activation, and the empty-channel state.
+- Verified with `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build`, and `npm run build-storybook`.
+- Landed via PR #11.
+
+### 2026-07-09 — Chore: Storybook addon-docs and addon-vitest
+
+- Added `@storybook/addon-docs` and tagged the `Card`, `Button`, and `Badge` atom stories with `tags: ['autodocs']`, generating a docs page (live canvas, props/controls table, all stories) for each.
+- Added `@storybook/addon-vitest`, splitting `vite.config.ts` into two Vitest projects: the existing jsdom RTL unit-test project, and a new `storybook` project that runs every Storybook story as a headless-Chromium browser test via Playwright.
+- Installed the Playwright Chromium binary locally and updated GitHub Actions CI to run `npx playwright install chromium --with-deps` before `npm run test`.
+- This reverses part of the Feature 01 decision to drop addon-vitest/Playwright and addon-docs for a lean foundation — revisited now that the design-system catalog has enough components to be worth documenting and smoke-testing automatically.
+- Verified with `npm run typecheck`, `npm run lint`, `npm run test` (44 tests across 11 files), `npm run build`, and `npm run build-storybook`; visually confirmed the generated Badge autodocs page renders correctly.
+- Landed via PR #10, merged to `main` independent of the (at the time in-progress) `feature/07-room-card` branch.
+
 ### 2026-07-09 — Feature 06: Card Primitive
 
 - Added a token-driven `Card` atom (`src/components/atoms/Card/`): a generic raised-surface container rendering a static `<div>` by default, or a real `<a>` (`as="a"`, requires `href`) or `<button>` (`as="button"`) when used as an interactive surface.
