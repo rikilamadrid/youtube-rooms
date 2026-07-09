@@ -11,6 +11,10 @@ const colorTokens = [
   { name: '--sr-color-border', label: 'Border' },
   { name: '--sr-color-accent', label: 'Accent' },
   { name: '--sr-color-accent-strong', label: 'Accent strong' },
+  { name: '--sr-color-success', label: 'Success' },
+  { name: '--sr-color-success-strong', label: 'Success strong' },
+  { name: '--sr-color-warning', label: 'Warning' },
+  { name: '--sr-color-warning-strong', label: 'Warning strong' },
 ];
 
 function ColorPage() {

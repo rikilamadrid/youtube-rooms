@@ -16,6 +16,10 @@
   --sr-color-border: rgba(255, 255, 255, 0.12);
   --sr-color-accent: #7c8cff;
   --sr-color-accent-strong: #aab3ff;
+  --sr-color-success: #22b573;
+  --sr-color-success-strong: #7de3ae;
+  --sr-color-warning: #d9922f;
+  --sr-color-warning-strong: #f5c667;
 
   /* Typography
      Base font family and a small, purposeful type scale. */
