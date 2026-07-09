@@ -1,0 +1,64 @@
+/* ============================================================
+   RoomCard
+   Composes Card + Badge to represent a Room. Layout lives on an
+   inner wrapper span so it never fights Card's own root classes.
+   ============================================================ */
+
+.sr-room-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sr-space-4);
+  width: 100%;
+}
+
+.sr-room-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--sr-radius-md);
+  background-color: var(--sr-color-surface);
+  color: var(--sr-color-text-muted);
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-md);
+  font-weight: 600;
+}
+
+.sr-room-card__icon--custom {
+  background-color: color-mix(in srgb, var(--sr-color-accent) 22%, var(--sr-color-surface));
+  color: var(--sr-color-accent-strong);
+}
+
+.sr-room-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sr-space-1);
+  min-width: 0;
+  flex: 1;
+}
+
+.sr-room-card__name {
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-lg);
+  font-weight: 600;
+  color: var(--sr-color-text);
+  overflow-wrap: break-word;
+}
+
+.sr-room-card__description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-sm);
+  color: var(--sr-color-text-muted);
+  overflow-wrap: break-word;
+}
+
+.sr-room-card__body .sr-badge {
+  margin-top: var(--sr-space-1);
+}

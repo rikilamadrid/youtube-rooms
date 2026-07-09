@@ -1,24 +1,37 @@
-# Current Feature
+# Current Feature: RoomCard Molecule
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-<!-- Not Started | In Progress | Complete -->
+In Progress
 
 ## Goals
 
-<!-- Bullet points of what success looks like -->
+- Build `RoomCard` molecule (`src/components/molecules/RoomCard/`) composing `Card`, `Badge`, and typography tokens to represent a `Room`.
+- Render room name, description, and a channel-count badge from a `Room`-shaped prop.
+- Render as an interactive `Card` (link-style), accepting `href`/`onClick` — route-agnostic, actual routing is feature 12.
+- Support an empty/zero-channel state with distinct, non-broken guidance copy (not an error).
+- Handle long room names/descriptions gracefully (truncation/wrapping).
+- Support optional icon (`iconName`) with a sensible fallback when absent.
+- Storybook stories: typical room, empty-channel room, long name/description, with icon, without icon.
+- Tests: renders expected text/roles, accessible name includes room name, keyboard activation triggers callback, empty-channel copy.
+- `npm run build` and `npm run build-storybook` pass; `CHANGELOG.md` updated under `## [Unreleased]`.
 
 ## Notes
 
-<!-- Additional context, constraints, or details from spec -->
+- `Room` contract (`context/project-overview.md`): `{ id: string; name: string; description?: string; iconName?: string; channelIds: string[]; createdAt: string; updatedAt: string }`. Use locally-defined fixture props in stories/tests — real mock data (feature 11) may land later.
+- Keep `RoomCard` presentational: receives data/callbacks as props, does not fetch or own room state.
+- Compose `Card` and `Badge` from features 06/05 — do not reimplement surface or label styling.
+- Accessible name for the card must include the room name at minimum (e.g., "Open Coding room").
+- Out of scope: routing wiring (feature 12), the room grid layout (feature 10), room editing/creation (later local-state feature).
+- Suggested branch: `feature/07-room-card`. Suggested commit: `feat: add roomcard molecule`.
 
 ---
 
 ## Up next
 
-- 07 — Room card molecule
+- 08 — Video card molecule
 
 ---
 
