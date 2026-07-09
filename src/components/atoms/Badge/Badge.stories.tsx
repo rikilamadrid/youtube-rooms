@@ -12,6 +12,7 @@ function DotIcon() {
 const meta: Meta<typeof Badge> = {
   title: 'Atoms/Badge',
   component: Badge,
+  tags: ['autodocs'],
   parameters: { layout: 'centered' },
   args: {
     children: 'Design systems',
