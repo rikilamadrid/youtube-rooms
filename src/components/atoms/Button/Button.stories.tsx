@@ -20,6 +20,7 @@ function ArrowRightIcon() {
 const meta: Meta<typeof Button> = {
   title: 'Atoms/Button',
   component: Button,
+  tags: ['autodocs'],
   parameters: { layout: 'centered' },
   args: {
     children: 'Create room',

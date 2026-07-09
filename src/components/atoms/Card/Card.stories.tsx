@@ -4,6 +4,7 @@ import { Card } from './Card';
 const meta: Meta<typeof Card> = {
   title: 'Atoms/Card',
   component: Card,
+  tags: ['autodocs'],
   parameters: { layout: 'centered' },
   argTypes: {
     padding: { control: 'select', options: ['none', 'sm', 'md', 'lg'] },
