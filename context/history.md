@@ -4,6 +4,16 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-09 — Feature 04: Button Primitive
+
+- Added a token-driven `Button` atom (`src/components/atoms/Button/`) rendering a real `<button>` or, via `as="a"`/`href`, an anchor, using a TypeScript discriminated union so invalid prop shapes (e.g. `as="a"` without `href`) fail at compile time.
+- Supports `primary`/`secondary`/`ghost` variants, `sm`/`md` sizes, `disabled`, an accessible `loading` state (`aria-busy`, spinner, preserved accessible name), and optional leading/trailing icons including icon-only usage via `aria-label`.
+- Styled entirely from `--sr-*` tokens, with hover/active shades derived via `color-mix()` and `prefers-reduced-motion` handling for the spinner animation.
+- Added Storybook stories for every state and RTL tests covering role/name, mouse and keyboard activation, disabled, loading, anchor mode, and icon-only naming.
+- Fixed a test-isolation bug by adding `afterEach(cleanup)` to `src/test/setup.ts` (a render from one test was leaking into the next).
+- Added Vitest v8 coverage tooling (`@vitest/coverage-v8`, `npm run test:coverage`, HTML report under `coverage/`, ESLint ignore for the generated output).
+- Verified with `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build`, and `npm run build-storybook`.
+
 ### 2026-07-09 — Feature 03: Storybook Foundations Catalog
 
 - Added `src/styles/foundations/` with an Introduction page describing SubRooms' design system and atomic-design organization, plus `Foundations/Color`, `Foundations/Typography`, and `Foundations/Spacing` stories.
