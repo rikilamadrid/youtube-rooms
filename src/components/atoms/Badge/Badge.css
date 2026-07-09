@@ -1,0 +1,67 @@
+/* ============================================================
+   Badge
+   Token-driven primitive. Tone backgrounds are computed from
+   --sr-* tokens via color-mix(), not new literal colors.
+   ============================================================ */
+
+.sr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sr-space-1);
+  max-width: 100%;
+  min-width: 0;
+  padding-block: var(--sr-space-1);
+  padding-inline: var(--sr-space-2);
+  border-radius: var(--sr-radius-pill);
+  border: var(--sr-border-width-sm) solid transparent;
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-sm);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.sr-badge__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  font-size: 0.875em;
+}
+
+.sr-badge__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sr-badge__label {
+  overflow: hidden;
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tones */
+
+.sr-badge--neutral {
+  background-color: var(--sr-color-surface-raised);
+  border-color: var(--sr-color-border);
+  color: var(--sr-color-text-muted);
+}
+
+.sr-badge--accent {
+  background-color: color-mix(in srgb, var(--sr-color-accent) 22%, var(--sr-color-surface));
+  border-color: color-mix(in srgb, var(--sr-color-accent) 45%, transparent);
+  color: var(--sr-color-accent-strong);
+}
+
+.sr-badge--success {
+  background-color: color-mix(in srgb, var(--sr-color-success) 22%, var(--sr-color-surface));
+  border-color: color-mix(in srgb, var(--sr-color-success) 45%, transparent);
+  color: var(--sr-color-success-strong);
+}
+
+.sr-badge--warning {
+  background-color: color-mix(in srgb, var(--sr-color-warning) 22%, var(--sr-color-surface));
+  border-color: color-mix(in srgb, var(--sr-color-warning) 45%, transparent);
+  color: var(--sr-color-warning-strong);
+}

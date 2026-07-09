@@ -4,6 +4,16 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-09 — Feature 05: Badge Primitive
+
+- Added a token-driven `Badge` atom (`src/components/atoms/Badge/`): a non-interactive `<span>` for short status/metadata labels, defaulting to a `neutral` tone with `accent`/`success`/`warning` alternatives.
+- Tone backgrounds and borders are derived from `--sr-*` tokens via `color-mix()`, not new literal colors; added `--sr-color-success`, `--sr-color-success-strong`, `--sr-color-warning`, and `--sr-color-warning-strong` to `tokens.css` and the `Foundations/Color` story.
+- Supports an optional leading icon, hidden from assistive tech via `aria-hidden`, so the badge's accessible name always comes from its text label rather than color or icon alone.
+- Long labels truncate to a single line (`text-overflow: ellipsis`) instead of wrapping or overflowing the layout.
+- Added Storybook stories for every tone, with/without icon, and a long-text truncation example.
+- Added RTL tests covering rendered text, default and explicit tone class application, and icon accessibility.
+- Verified with `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run build`.
+
 ### 2026-07-09 — Feature 04: Button Primitive
 
 - Added a token-driven `Button` atom (`src/components/atoms/Button/`) rendering a real `<button>` or, via `as="a"`/`href`, an anchor, using a TypeScript discriminated union so invalid prop shapes (e.g. `as="a"` without `href`) fail at compile time.
