@@ -1,0 +1,95 @@
+.sr-foundations-page {
+  max-width: var(--sr-layout-width-md);
+  margin: 0 auto;
+  padding: var(--sr-space-4);
+  color: var(--sr-color-text);
+  font-family: var(--sr-font-family-base);
+}
+
+.sr-foundations-intro ul {
+  display: grid;
+  gap: var(--sr-space-2);
+  padding-left: var(--sr-space-6);
+}
+
+.sr-foundations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--sr-space-4);
+  margin-top: var(--sr-space-4);
+}
+
+.sr-foundations-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-2);
+  padding: var(--sr-space-3);
+  border: var(--sr-border-width-sm) solid var(--sr-color-border);
+  border-radius: var(--sr-radius-md);
+  background: var(--sr-color-surface);
+}
+
+.sr-foundations-swatch-color {
+  display: block;
+  width: 100%;
+  height: 4rem;
+  border-radius: var(--sr-radius-sm);
+  border: var(--sr-border-width-sm) solid var(--sr-color-border);
+}
+
+.sr-foundations-swatch-meta {
+  display: grid;
+  gap: var(--sr-space-1);
+  font-size: var(--sr-font-size-sm);
+}
+
+.sr-foundations-swatch-label {
+  margin: 0;
+  font-weight: 600;
+}
+
+.sr-foundations-swatch-var,
+.sr-foundations-swatch-value {
+  color: var(--sr-color-text-muted);
+}
+
+.sr-foundations-type-row {
+  display: grid;
+  gap: var(--sr-space-2);
+  padding: var(--sr-space-3) 0;
+  border-bottom: var(--sr-border-width-sm) solid var(--sr-color-border);
+}
+
+.sr-foundations-type-sample {
+  margin: 0;
+}
+
+.sr-foundations-type-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sr-space-3);
+  font-size: var(--sr-font-size-sm);
+  color: var(--sr-color-text-muted);
+}
+
+.sr-foundations-space-row {
+  display: grid;
+  gap: var(--sr-space-2);
+  padding: var(--sr-space-3) 0;
+  border-bottom: var(--sr-border-width-sm) solid var(--sr-color-border);
+}
+
+.sr-foundations-space-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sr-space-3);
+  font-size: var(--sr-font-size-sm);
+  color: var(--sr-color-text-muted);
+}
+
+.sr-foundations-space-bar {
+  height: var(--sr-space-4);
+  min-height: 4px;
+  background: var(--sr-color-accent);
+  border-radius: var(--sr-radius-sm);
+}
