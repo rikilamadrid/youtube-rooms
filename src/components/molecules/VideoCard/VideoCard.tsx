@@ -11,8 +11,14 @@ export type VideoCardProps = {
   video: VideoSummary;
   /** Display name of the video's channel; resolved by the parent, not embedded in `video`. */
   channelTitle: string;
-  /** Called with `video.id` when the "Add to queue" button is activated. VideoCard owns no queue logic itself. */
-  onAddToQueue: (videoId: string) => void;
+  /** Called with `video.id` when the "Add to queue" button is activated. Omit in queue contexts, where adding again doesn't apply. VideoCard owns no queue logic itself. */
+  onAddToQueue?: (videoId: string) => void;
+  /** Called with `video.id` when the "Remove from queue" button is activated. Only relevant when rendering a queue list. */
+  onRemoveFromQueue?: (videoId: string) => void;
+  /** Called with `video.id` when the "Set as active" button is activated. Only relevant when rendering a queue list. */
+  onSetActive?: (videoId: string) => void;
+  /** Whether this video is the queue's active video. Only meaningful alongside `onSetActive`. */
+  isActive?: boolean;
 };
 
 function PlayIcon() {
@@ -47,12 +53,27 @@ function Thumbnail({ video }: { video: VideoSummary }) {
  * The "Add to queue" action gets a video-specific accessible name
  * ("Add {title} to queue") rather than a generic one.
  */
-export function VideoCard({ video, channelTitle, onAddToQueue }: VideoCardProps) {
+export function VideoCard({
+  video,
+  channelTitle,
+  onAddToQueue,
+  onRemoveFromQueue,
+  onSetActive,
+  isActive = false,
+}: VideoCardProps) {
   const publishedDate = formatPublishedDate(video.publishedAt);
   const duration = formatDuration(video.duration);
 
   const handleAddToQueue = () => {
-    onAddToQueue(video.id);
+    onAddToQueue?.(video.id);
+  };
+
+  const handleRemoveFromQueue = () => {
+    onRemoveFromQueue?.(video.id);
+  };
+
+  const handleSetActive = () => {
+    onSetActive?.(video.id);
   };
 
   return (
@@ -75,16 +96,44 @@ export function VideoCard({ video, channelTitle, onAddToQueue }: VideoCardProps)
             </>
           ) : null}
           {video.watched ? <Badge tone="success">Watched</Badge> : null}
+          {isActive ? (
+            <Badge tone="accent" icon={<PlayIcon />}>
+              Now playing
+            </Badge>
+          ) : null}
         </span>
         <span className="sr-video-card__footer">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleAddToQueue}
-            aria-label={`Add ${video.title} to queue`}
-          >
-            Add to queue
-          </Button>
+          {onAddToQueue ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleAddToQueue}
+              aria-label={`Add ${video.title} to queue`}
+            >
+              Add to queue
+            </Button>
+          ) : null}
+          {onSetActive ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleSetActive}
+              disabled={isActive}
+              aria-label={isActive ? `${video.title} is the active video` : `Set ${video.title} as active`}
+            >
+              {isActive ? 'Now playing' : 'Set as active'}
+            </Button>
+          ) : null}
+          {onRemoveFromQueue ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRemoveFromQueue}
+              aria-label={`Remove ${video.title} from queue`}
+            >
+              Remove
+            </Button>
+          ) : null}
         </span>
       </span>
     </Card>

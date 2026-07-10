@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { mockChannels } from '../../data/mockChannels';
+import { mockQueues } from '../../data/mockQueues';
 import { mockRooms } from '../../data/mockRooms';
 import { mockVideos } from '../../data/mockVideos';
 import { RoomDetailPage } from './RoomDetailPage';
@@ -27,7 +29,10 @@ describe('RoomDetailPage', () => {
     const roomVideos = mockVideos
       .filter((video) => room.channelIds.includes(video.channelId))
       .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
-    const items = screen.getAllByRole('listitem').map((item) => item.textContent);
+    const feed = screen.getByRole('list', { name: 'Latest videos' });
+    const items = within(feed)
+      .getAllByRole('listitem')
+      .map((item) => item.textContent);
 
     roomVideos.forEach((video, index) => {
       expect(items[index]).toContain(video.title);
@@ -61,5 +66,48 @@ describe('RoomDetailPage', () => {
 
     const channel = mockChannels.find((candidate) => candidate.id === room.channelIds[0])!;
     expect(screen.getAllByText(channel.title).length).toBeGreaterThan(0);
+  });
+
+  it('seeds the queue panel from mockQueues for a room with an existing queue', () => {
+    const room = mockRooms.find((candidate) => candidate.id === 'room-coding')!;
+    const seededQueue = mockQueues.find((candidate) => candidate.roomId === room.id)!;
+    renderAtRoom(room.id);
+
+    const queuePanel = screen.getByRole('list', { name: 'Your queue' });
+    expect(within(queuePanel).getAllByRole('listitem')).toHaveLength(seededQueue.videoIds.length);
+  });
+
+  it('renders an empty queue state for a room with no seeded queue', () => {
+    const room = mockRooms.find((candidate) => candidate.id === 'room-someday')!;
+    renderAtRoom(room.id);
+
+    expect(screen.getByRole('heading', { name: 'Your queue is empty' })).toBeInTheDocument();
+  });
+
+  it('adds, removes, and sets an active video in the queue end to end', async () => {
+    const user = userEvent.setup();
+    const room = mockRooms.find((candidate) => candidate.id === 'room-cooking')!;
+    const roomVideos = mockVideos
+      .filter((video) => room.channelIds.includes(video.channelId))
+      .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
+    const targetVideo = roomVideos[0];
+    renderAtRoom(room.id);
+
+    const feed = screen.getByRole('list', { name: 'Latest videos' });
+    const addButton = within(feed).getByRole('button', { name: `Add ${targetVideo.title} to queue` });
+
+    await user.click(addButton);
+    await user.click(addButton);
+
+    const queuePanel = screen.getByRole('list', { name: 'Your queue' });
+    expect(within(queuePanel).getAllByText(targetVideo.title)).toHaveLength(1);
+
+    await user.click(within(queuePanel).getByRole('button', { name: `Set ${targetVideo.title} as active` }));
+    expect(
+      within(queuePanel).getByRole('button', { name: `${targetVideo.title} is the active video` }),
+    ).toBeDisabled();
+
+    await user.click(within(queuePanel).getByRole('button', { name: `Remove ${targetVideo.title} from queue` }));
+    expect(within(queuePanel).queryByText(targetVideo.title)).not.toBeInTheDocument();
   });
 });

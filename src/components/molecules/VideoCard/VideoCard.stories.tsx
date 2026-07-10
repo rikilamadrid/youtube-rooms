@@ -80,6 +80,37 @@ export const LongTitle: Story = {
   },
 };
 
+export const QueueRow: Story = {
+  args: {
+    video: { ...baseVideo, id: 'video-7' },
+    onAddToQueue: undefined,
+    onRemoveFromQueue: fn(),
+    onSetActive: fn(),
+  },
+  play: async ({ args, canvas, userEvent }) => {
+    await expect(canvas.queryByRole('button', { name: /add .* to queue/i })).not.toBeInTheDocument();
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Set Weeknight Pasta in 20 Minutes as active' }));
+    await expect(args.onSetActive).toHaveBeenCalledWith('video-7');
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Remove Weeknight Pasta in 20 Minutes from queue' }));
+    await expect(args.onRemoveFromQueue).toHaveBeenCalledWith('video-7');
+  },
+};
+
+export const QueueRowActive: Story = {
+  args: {
+    video: { ...baseVideo, id: 'video-8' },
+    onAddToQueue: undefined,
+    onRemoveFromQueue: fn(),
+    onSetActive: fn(),
+    isActive: true,
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('button', { name: 'Weeknight Pasta in 20 Minutes is the active video' })).toBeDisabled();
+  },
+};
+
 export const KeyboardActivation: Story = {
   args: { video: { ...baseVideo, id: 'video-6' }, onAddToQueue: fn() },
   play: async ({ args, canvas, userEvent }) => {

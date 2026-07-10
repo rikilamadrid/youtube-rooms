@@ -1,24 +1,38 @@
-# Current Feature
+# Current Feature: Watch Queue UI
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-<!-- Not Started | In Progress | Complete -->
+In Progress
 
 ## Goals
 
-<!-- Bullet points of what success looks like -->
+- Introduce local component state for the current room's `WatchQueue`, seeded from `mockQueues` if one exists for the room, or an empty queue otherwise.
+- Wire the room detail feed's "Add to queue" action (feature 13 placeholder) to append the video's id to the queue, de-duplicated.
+- Render the queue as an ordered list of `VideoCard`s (or a compact queue-specific row variant only if `VideoCard` proves too heavy for a dense list).
+- Support removing a video from the queue via an accessible control.
+- Support marking one queued video as `activeVideoId`, with a visible, non-color-only indicator of which item is active.
+- Render `EmptyState` when the queue has no items, with copy guiding the user back to the video feed.
+- Keep queue state scoped to the room detail page; no cross-route/global persistence.
 
 ## Notes
 
-<!-- Additional context, constraints, or details from spec -->
+- Follow the `WatchQueue` interface exactly (`id`, `roomId`, `videoIds`, `activeVideoId`).
+- Keep queue mutation logic (add/remove/set-active, de-duplication) in a small, unit-testable function or hook rather than inline in JSX handlers; extract into `src/hooks/useWatchQueue.ts` only if complex enough to warrant it.
+- Reuse `VideoCard`, `Button`, `EmptyState` from prior features; avoid duplicating card/empty-state markup.
+- Mobile-first: queue panel usable as a stacked section, no desktop-only layout requirement.
+- Clearly distinguish "browse videos" (feed) from "your queue" visually.
+- Out of scope: actual video playback, drag-and-drop reordering (manual move up/down only if trivial), persistence across reloads, multiple simultaneous room queues visible at once.
+- Likely files: `src/app/routes/RoomDetailPage.tsx` (extended), `src/components/organisms/WatchQueuePanel/` (+ `.css`/`.stories.tsx`/`.test.tsx`), possibly `src/hooks/useWatchQueue.ts` (+ tests).
+- Acceptance: add-to-queue de-duplicates; queue panel renders in order with working remove/set-active controls; active video indicated accessibly; empty queue shows `EmptyState`; Storybook covers empty/several-items/active-item states; tests cover add/remove/set-active/empty; `npm run build` and `npm run build-storybook` pass; `CHANGELOG.md` updated under `## [Unreleased]`.
+- Full spec: `context/features/14-watch-queue-ui.md`.
 
 ---
 
 ## Up next
 
-- 14 — Watch queue UI
+- 15 — Accessibility and responsive QA pass
 
 ---
 

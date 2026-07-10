@@ -34,7 +34,7 @@ export function VideoFeed({
   }
 
   return (
-    <ul className="sr-video-feed">
+    <ul className="sr-video-feed" aria-label="Latest videos">
       {items.map(({ video, channelTitle }) => (
         <li key={video.id} className="sr-video-feed__item">
           <VideoCard video={video} channelTitle={channelTitle} onAddToQueue={onAddToQueue} />
