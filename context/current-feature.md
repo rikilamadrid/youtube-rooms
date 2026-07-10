@@ -1,24 +1,33 @@
-# Current Feature
+# Current Feature: Mock Data Models And Fixtures
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-<!-- Not Started | In Progress | Complete -->
+In Progress
 
 ## Goals
 
-<!-- Bullet points of what success looks like -->
+- Finalize shared TypeScript domain types in `src/types/`: `channel.ts` (`SubscriptionChannel`), `room.ts` (`Room`), `video.ts` (`VideoSummary`), `queue.ts` (`WatchQueue`), matching `context/project-overview.md`'s Core Data Models (evolve fields only for a genuine gap, and document any deviation).
+- Build realistic, varied typed mock data fixtures (`src/data/mockChannels.ts`, `mockRooms.ts`, `mockVideos.ts`, `mockQueues.ts`, or a consolidated `mockData.ts`) covering at least 4-5 rooms (e.g. Coding, Cooking, Sketching, Gaming, Music) with cross-referenced, internally consistent IDs.
+- Include deliberate edge cases: a room with zero channels, a channel with zero recent videos, a video with missing optional fields (no thumbnail, no duration), a queue with no active video.
+- Mark all mock records with `isMock: true` where the type supports it.
+- Add small typed accessor helpers only if a concrete consumer needs them, each with a unit test — no speculative query APIs.
 
 ## Notes
 
-<!-- Additional context, constraints, or details from spec -->
+- Out of scope: wiring mock data into actual pages/routes (features 12-14), persistence/local storage (Build Phase 4), real YouTube API shapes (Build Phase 5+), rewriting existing component stories to use shared fixtures (fast-follow, not required).
+- References: `context/project-overview.md` (Core Data Models), `context/coding-standards.md` (Data section), `context/features/07-room-card-molecule.md`, `context/features/08-video-card-molecule.md`.
+- Suggested branch: `feature/11-mock-data-fixtures`.
+- Suggested commit: `feat: add typed mock data models and fixtures`.
+- Verification: `npm run test`, `npm run typecheck`, `npm run lint`, `npm run build`; manually inspect fixtures for cross-referential consistency.
+- Full spec: `context/features/11-mock-data-models-and-fixtures.md`.
 
 ---
 
 ## Up next
 
-- 11 — Mock data models and fixtures
+- 12 — Dashboard shell
 
 ---
 
