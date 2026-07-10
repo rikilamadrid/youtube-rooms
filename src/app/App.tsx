@@ -1,9 +1,18 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { AppShell } from './AppShell';
+import { DashboardPage } from './routes/DashboardPage';
+import { RoomDetailPage } from './routes/RoomDetailPage';
+
 function App() {
   return (
-    <main>
-      <h1>SubRooms</h1>
-      <p>Organize your YouTube subscriptions into focused viewing rooms.</p>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/rooms/:roomId" element={<RoomDetailPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
