@@ -1,35 +1,24 @@
-# Current Feature: Room Grid Organism
+# Current Feature
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-In Progress
+<!-- Not Started | In Progress | Complete -->
 
 ## Goals
 
-- Build `RoomGrid` organism (`src/components/organisms/RoomGrid/`) that renders one `RoomCard` per `Room` in an array.
-- Render `EmptyState` (with "no rooms yet" copy and an optional create-room action callback) when the array is empty.
-- Responsive CSS grid: single column mobile-first, more columns at tablet/desktop, gap from spacing tokens.
-- Sensible reading/tab order regardless of column count; handles 1 room and 12+ rooms gracefully.
-- Storybook stories: empty, single room, few rooms, many rooms (12+), verified across mobile/tablet/desktop viewports.
-- Tests: correct `RoomCard` count for given data, `EmptyState` on empty array, no crash with a single room.
-- `npm run build` and `npm run build-storybook` pass; `CHANGELOG.md` updated under `## [Unreleased]`.
+<!-- Bullet points of what success looks like -->
 
 ## Notes
 
-- Compose existing `RoomCard` (feature 07) and `EmptyState` (feature 09) — no new card/empty-state logic duplicated here.
-- Stay presentational: receives rooms and callbacks as props, does not fetch data; navigation destination logic is out of scope (wired in feature 12).
-- Sorting/filtering/searching and room creation/editing UI are out of scope.
-- Use CSS Grid with `auto-fill`/`minmax` or explicit breakpoints, whichever is simpler to reason about and test visually.
-- Suggested branch: `feature/10-room-grid`. Suggested commit: `feat: add room grid organism`.
-- Spec: `context/features/10-room-grid-organism.md`.
+<!-- Additional context, constraints, or details from spec -->
 
 ---
 
 ## Up next
 
-(none listed — next up after this feature is 11 — Mock data models and fixtures)
+- 11 — Mock data models and fixtures
 
 ---
 
@@ -46,3 +35,4 @@ In Progress
 - Feature 07 — RoomCard Molecule (2026-07-09): built the `Room` domain type (`src/types/room.ts`) and the `RoomCard` molecule (`src/components/molecules/RoomCard/`), composing `Card` and `Badge` to represent a `Room` as an interactive, route-agnostic surface (`href` renders a link, `onClick` alone renders a button). Renders the room name, an optional two-line-clamped description, and a channel-count `Badge` from an optional `channelCount` prop or `room.channelIds.length`, with a distinct "No channels yet" guidance state instead of "0 channels". Renders an optional icon slot resolved from `iconName` (falling back to the room name's initial) and gives the interactive surface an explicit accessible name (`Open {name} room`). Added Storybook stories for a typical room, empty-channel room, long name/description, with/without icon, and button usage, plus RTL tests covering rendered content, accessible name, link/button rendering, keyboard activation, and the empty-channel state. Verified `typecheck`, `lint`, `test`, `build`, and `build-storybook` all pass. Landed via PR #11.
 - Feature 08 — VideoCard Molecule (2026-07-09): built the `VideoSummary` domain type (`src/types/video.ts`) and the `VideoCard` molecule (`src/components/molecules/VideoCard/`), composing `Card`, `Badge`, and `Button` to represent a video — thumbnail (decorative `alt=""`, with a decorative fallback icon when `thumbnailUrl` is missing), title, channel name (passed in by the parent), published date, duration (omitted when missing), and a "Watched" `Badge` when `video.watched` is true. Exposes an `onAddToQueue(videoId)` callback via an "Add to queue" `Button` with a video-specific accessible name (`Add {title} to queue`) — stays presentational, owns no queue logic. Added `formatPublishedDate` and `formatDuration` utilities (`src/utils/`) with their own unit tests. Added Storybook stories for a typical video, watched video, missing thumbnail, missing duration, long title, and keyboard activation, plus RTL tests covering rendered metadata, the conditional watched badge, thumbnail/fallback decorativeness, accessible name correctness, and callback firing via mouse and keyboard. Also adopted Storybook `play` functions (via `storybook/test`) as the standing convention for interaction/behavior story coverage — documented in `context/coding-standards.md` — and retrofitted them onto existing interactive stories for `Button`, `Card`, and `RoomCard`. Verified `typecheck`, `lint`, `test`, and `build` all pass. Landed via PR #12.
 - Feature 09 — EmptyState Molecule (2026-07-09): built the `EmptyState` molecule (`src/components/molecules/EmptyState/`), a fully prop-driven, centered placeholder for "nothing here yet" surfaces (empty room lists, empty channel assignments, empty video feeds, empty queues), composing `Button` for its optional action. Accepts `title` (rendered as a real heading, with a `headingLevel` prop so callers can pick the level that fits the page outline it's dropped into), optional `description`, optional decorative `icon` (hidden from assistive tech), and an optional `actionLabel` + `onAction` pair. Added Storybook stories for no-rooms, no-channels-in-room, no-videos-in-feed, empty-queue, a no-action informational variant, and an in-page-context story verifying correct `h1`→`h2`→`h3` heading nesting, plus RTL tests covering rendered title/description, action callback firing, the no-action/no-crash case, heading level selection, and icon decorativeness. Verified `typecheck`, `lint`, `test`, `build`, and `build-storybook` all pass.
+- Feature 10 — Room Grid Organism (2026-07-09): built the `RoomGrid` organism (`src/components/organisms/RoomGrid/`), composing `RoomCard` and `EmptyState` into a responsive, mobile-first grid of rooms — a single column on narrow viewports, reflowing to more columns via CSS Grid `auto-fill`/`minmax` (no hand-authored breakpoints), gaps from spacing tokens. Renders one `RoomCard` per room as a semantic `<ul>`/`<li>` list (preserving DOM/tab order regardless of column count), or an `EmptyState` with "No rooms yet" copy and an optional create-room action when the room array is empty. Stays presentational and route-agnostic: accepts either a `getHref` resolver (rooms render as links) or an `onRoomSelect` callback (rooms render as buttons), enforced at the type level via a discriminated union mirroring `RoomCard`'s own. Added Storybook stories for empty (with and without the create action), a single room, a few rooms, many rooms (14), and button-mode selection, plus RTL tests covering rendered `RoomCard` count, link/button rendering, the empty state and its conditional action, and single/many-room rendering without crashing. Verified `typecheck`, `lint`, `test`, `build`, and `build-storybook` all pass.
