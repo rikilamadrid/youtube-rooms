@@ -52,6 +52,10 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 ### Changed
 
 - Clarified the remote merge workflow in `CLAUDE.md` and `context/ai-interaction.md`: push branch, open PR, merge on remote via `gh pr merge`, then sync `main` locally — each step is a separate checkpoint requiring confirmation.
+- Added `react-router-dom` and introduced client-side routing: `App.tsx` now renders a `BrowserRouter` with a `/` dashboard route and a `/rooms/:roomId` route, both nested under a shared `AppShell` layout.
+- `AppShell` (`src/app/AppShell.tsx`/`.css`): a minimal, token-driven app frame with a header (brand link back to `/`) and a content container, rendering route content via `Outlet`.
+- `DashboardPage` (`src/app/routes/DashboardPage.tsx`): the `/` route, a thin composition of `RoomGrid` with `mockRooms`; selecting a room navigates to `/rooms/:roomId` via `useNavigate`.
+- `RoomDetailPage` (`src/app/routes/RoomDetailPage.tsx`): a minimal placeholder for `/rooms/:roomId` that resolves the room from `mockRooms` by `useParams`, showing the room name or a "Room not found" state with a link back to `/`; full detail UI lands in feature 13.
 
 ## [0.1.0] - 2026-07-07
 

@@ -1,24 +1,36 @@
-# Current Feature
+# Current Feature: Dashboard Shell
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-<!-- Not Started | In Progress | Complete -->
+In Progress
 
 ## Goals
 
-<!-- Bullet points of what success looks like -->
+- Introduce client-side routing (`react-router-dom`) with at least `/` and a placeholder `/rooms/:roomId` route.
+- Build a minimal app shell (header/nav + layout container) using design tokens.
+- Build the `/` dashboard page composing `RoomGrid` with `mockRooms` (channel counts derived from `mockChannels`) from feature 11.
+- Wire `RoomCard`/`RoomGrid` navigation callbacks to real route transitions to `/rooms/:roomId`.
+- App shell and dashboard page are mobile-first responsive.
+- "No rooms" case handled naturally via `RoomGrid`'s existing `EmptyState` support.
+- `/rooms/:roomId` is a minimal placeholder page only (real detail UI is feature 13).
 
 ## Notes
 
-<!-- Additional context, constraints, or details from spec -->
+- Only new dependency: `react-router-dom`. No state management libraries.
+- Keep `DashboardPage` a thin composition layer: pull mock data, pass to `RoomGrid`, handle navigation via `useNavigate`/`Link`.
+- Maintain focus management expectations on route change; keep app state close to where it's needed.
+- Likely files: `src/app/App.tsx`, `src/app/AppShell.tsx`/`.css`, `src/app/routes/DashboardPage.tsx`, `src/app/routes/RoomDetailPage.tsx` (+ tests for both).
+- Out of scope: real room detail content, `/channels`/`/settings` routes, room creation/editing, persisted/local-storage state.
+- Acceptance: dashboard renders from mock data; clicking/keyboard-activating a room navigates to `/rooms/:roomId` with correct placeholder content; responsive across widths; tests cover room count render + navigation; `npm run build` passes; `CHANGELOG.md` updated under `## [Unreleased]`.
+- Full spec: `context/features/12-dashboard-shell.md`.
 
 ---
 
 ## Up next
 
-- 12 — Dashboard shell
+- 13 — Room detail layout
 
 ---
 
