@@ -4,6 +4,14 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-09 — Feature 12: Dashboard Shell
+
+- Introduced client-side routing with `react-router-dom` (the only new dependency): `App.tsx` renders a `BrowserRouter` with a `/` dashboard route and a `/rooms/:roomId` route, both nested under a shared `AppShell` layout.
+- Built `AppShell` (`src/app/AppShell.tsx`/`.css`): a minimal, token-driven app frame with a header (brand link back to `/`) and a content container, rendering route content via `Outlet`.
+- Built `DashboardPage` (`src/app/routes/DashboardPage.tsx`): the `/` route, a thin composition of `RoomGrid` with `mockRooms`; selecting a room navigates to `/rooms/:roomId` via `useNavigate`.
+- Built `RoomDetailPage` (`src/app/routes/RoomDetailPage.tsx`): a minimal placeholder for `/rooms/:roomId` that resolves the room from `mockRooms` by `useParams`, showing the room name or a "Room not found" state with a link back to `/`; full detail UI lands in feature 13.
+- Verified `typecheck`, `lint`, `test`, and `build` all pass. Landed via PR #16.
+
 ### 2026-07-09 — Feature 11: Mock Data Models And Fixtures
 
 - Added the `SubscriptionChannel` and `WatchQueue` domain types (`src/types/channel.ts`, `src/types/queue.ts`), matching the contracts in `context/project-overview.md` and completing the four Core Data Models alongside the existing `Room` and `VideoSummary` types.

@@ -1,0 +1,22 @@
+/* ============================================================
+   VideoFeed
+   Mobile-first, single-column list of VideoCards. No grid — a
+   video list reads better as a stack than reflowing columns.
+   ============================================================ */
+
+.sr-video-feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sr-video-feed--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sr-space-8) var(--sr-space-4);
+}
