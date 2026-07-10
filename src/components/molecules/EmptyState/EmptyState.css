@@ -1,0 +1,50 @@
+/* ============================================================
+   EmptyState
+   Centered, low-noise placeholder for "nothing here yet" surfaces.
+   Designed to sit inside a grid, list, or panel area at any width.
+   ============================================================ */
+
+.sr-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sr-space-2);
+  width: 100%;
+  padding: var(--sr-space-8) var(--sr-space-4);
+  text-align: center;
+}
+
+.sr-empty-state__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: var(--sr-space-2);
+  color: var(--sr-color-text-muted);
+}
+
+.sr-empty-state__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sr-empty-state__title {
+  margin: 0;
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-lg);
+  font-weight: 600;
+  color: var(--sr-color-text);
+}
+
+.sr-empty-state__description {
+  margin: 0;
+  max-width: 28rem;
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-sm);
+  color: var(--sr-color-text-muted);
+}
+
+.sr-empty-state__action {
+  margin-top: var(--sr-space-2);
+}
