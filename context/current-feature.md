@@ -1,32 +1,18 @@
-# Current Feature: Watch Queue UI
+# Current Feature
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-In Progress
+<!-- Not Started | In Progress | Complete -->
 
 ## Goals
 
-- Introduce local component state for the current room's `WatchQueue`, seeded from `mockQueues` if one exists for the room, or an empty queue otherwise.
-- Wire the room detail feed's "Add to queue" action (feature 13 placeholder) to append the video's id to the queue, de-duplicated.
-- Render the queue as an ordered list of `VideoCard`s (or a compact queue-specific row variant only if `VideoCard` proves too heavy for a dense list).
-- Support removing a video from the queue via an accessible control.
-- Support marking one queued video as `activeVideoId`, with a visible, non-color-only indicator of which item is active.
-- Render `EmptyState` when the queue has no items, with copy guiding the user back to the video feed.
-- Keep queue state scoped to the room detail page; no cross-route/global persistence.
+<!-- Bullet points of what success looks like -->
 
 ## Notes
 
-- Follow the `WatchQueue` interface exactly (`id`, `roomId`, `videoIds`, `activeVideoId`).
-- Keep queue mutation logic (add/remove/set-active, de-duplication) in a small, unit-testable function or hook rather than inline in JSX handlers; extract into `src/hooks/useWatchQueue.ts` only if complex enough to warrant it.
-- Reuse `VideoCard`, `Button`, `EmptyState` from prior features; avoid duplicating card/empty-state markup.
-- Mobile-first: queue panel usable as a stacked section, no desktop-only layout requirement.
-- Clearly distinguish "browse videos" (feed) from "your queue" visually.
-- Out of scope: actual video playback, drag-and-drop reordering (manual move up/down only if trivial), persistence across reloads, multiple simultaneous room queues visible at once.
-- Likely files: `src/app/routes/RoomDetailPage.tsx` (extended), `src/components/organisms/WatchQueuePanel/` (+ `.css`/`.stories.tsx`/`.test.tsx`), possibly `src/hooks/useWatchQueue.ts` (+ tests).
-- Acceptance: add-to-queue de-duplicates; queue panel renders in order with working remove/set-active controls; active video indicated accessibly; empty queue shows `EmptyState`; Storybook covers empty/several-items/active-item states; tests cover add/remove/set-active/empty; `npm run build` and `npm run build-storybook` pass; `CHANGELOG.md` updated under `## [Unreleased]`.
-- Full spec: `context/features/14-watch-queue-ui.md`.
+<!-- Additional context, constraints, or details from spec -->
 
 ---
 
@@ -38,6 +24,7 @@ In Progress
 
 ## Recently landed
 
+- Feature 14 — Watch Queue UI (2026-07-10): `RoomDetailPage` now owns local `WatchQueue` state, seeded from `mockQueues` for the current room, wiring each `VideoCard`'s "Add to queue" action to real (de-duplicated) queue state in place of the feature-13 placeholder. Added `addToQueue`/`removeFromQueue`/`setActiveVideo` (`src/utils/watchQueue.ts`) as small, unit-tested pure functions. Extended `VideoCard` with optional `onRemoveFromQueue`/`onSetActive`/`isActive` props so the same card renders both a feed row and a queue row (with a non-color-only "Now playing" indicator) without duplicating markup. Added the `WatchQueuePanel` organism (`src/components/organisms/WatchQueuePanel/`), rendering the queue as an ordered list of `VideoCard`s or an `EmptyState` guiding back to the feed. Verified `typecheck`, `lint`, `test` (157 tests), `build`, `build-storybook`, plus a manual Playwright pass confirming add/remove/set-active behavior in the browser with no console errors. Landed via PR #18.
 - Feature 13 — Room Detail Layout (2026-07-10): replaced the feature-12 placeholder `/rooms/:roomId` page with a real room detail view. Added the `resolveRoomVideoFeed` utility (`src/utils/`) that resolves a room's `channelIds` to their videos from `mockVideos`, attaches each video's resolved channel title, and sorts by `publishedAt` descending. Added the `VideoFeed` organism (`src/components/organisms/VideoFeed/`), rendering a mobile-first, single-column list of `VideoCard`s or a caller-driven `EmptyState`. `RoomDetailPage` now renders a room header (name, description, channel-count `Badge`) and a "Latest videos" `VideoFeed`, with three distinct states: room not found, room with no channels, and room with channels but no recent videos; each `VideoCard`'s "Add to queue" action is wired to a placeholder console-logged callback (real queue is feature 14). Added a `room-jazz-theory` mock room to cover the "channels assigned but no videos" edge case missing from feature 11's fixtures. Verified `typecheck`, `lint`, `test` (130 jsdom + 50 real-Chromium Storybook interaction tests), `build`, and `build-storybook` all pass. Landed via PR #17.
 - Feature 12 — Dashboard Shell (2026-07-09): introduced client-side routing (`react-router-dom`) via `App.tsx` rendering a `BrowserRouter` with a `/` dashboard route and a `/rooms/:roomId` route, both nested under a shared `AppShell` layout. Built `AppShell` (`src/app/AppShell.tsx`/`.css`) as a minimal, token-driven header (brand link back to `/`) + content container, rendering route content via `Outlet`. Built `DashboardPage` (`src/app/routes/DashboardPage.tsx`) as a thin composition of `RoomGrid` with `mockRooms`, navigating to `/rooms/:roomId` via `useNavigate` on room selection. Built `RoomDetailPage` (`src/app/routes/RoomDetailPage.tsx`) as a minimal placeholder that resolves the room from `mockRooms` by `useParams`, showing the room name or a "Room not found" state with a link back to `/` — full detail UI is feature 13. Verified `typecheck`, `lint`, `test`, and `build` all pass. Landed via PR #16.
 - Feature 11 — Mock Data Models And Fixtures (2026-07-09): finalized the four Core Data Model types in `src/types/` (added `channel.ts`/`queue.ts`; `room.ts`/`video.ts` already matched) and added one authoritative, cross-referenced set of typed mock fixtures in `src/data/` — 6 rooms, 10 channels, 16 videos, 4 queues — with deliberate edge cases (empty-channel room, channel with no videos, videos missing thumbnail/duration, queue with no active video). Verified `typecheck`, `lint`, `test`, and `build` all pass. Landed via PR #15.

@@ -4,6 +4,16 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-10 — Feature 14: Watch Queue UI
+
+- `RoomDetailPage` now owns local `WatchQueue` state, seeded from `mockQueues` for the current room (or an empty queue otherwise), and wires each `VideoCard`'s "Add to queue" action to real queue state — replacing the feature-13 console-logged placeholder.
+- Added `addToQueue`, `removeFromQueue`, and `setActiveVideo` (`src/utils/watchQueue.ts`): small, unit-tested pure functions handling add-with-de-duplication, remove (clearing `activeVideoId` if the removed video was active), and marking a video active.
+- Extended the `VideoCard` molecule with optional `onRemoveFromQueue`, `onSetActive`, and `isActive` props so the same card renders both a feed row ("Add to queue") and a queue row ("Remove" and "Set as active"/"Now playing") without duplicating card markup; the active indicator pairs a "Now playing" `Badge` with a disabled, relabeled button so it isn't color-only.
+- Added the `WatchQueuePanel` organism (`src/components/organisms/WatchQueuePanel/`): renders the queue as an ordered list of `VideoCard`s, or an `EmptyState` guiding the viewer back to the video feed when empty.
+- Added Storybook stories (empty, several items, active item, remove/set-active interactions) and RTL/unit tests covering add-de-duplication, remove, set-active, and the empty-queue state.
+- Verified `typecheck`, `lint`, `test` (157 tests), `build`, and `build-storybook` all pass, plus a manual Playwright pass against the running dev server confirming add-with-dedup, remove, and set-active behave correctly in the browser with no console errors.
+- Landed via PR #18.
+
 ### 2026-07-10 — Feature 13: Room Detail Layout
 
 - Replaced the feature-12 placeholder `/rooms/:roomId` page with a real room detail view.
