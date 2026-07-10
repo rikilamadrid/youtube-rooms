@@ -1,0 +1,73 @@
+/* ============================================================
+   VideoCard
+   Composes Card + Badge + Button to represent a VideoSummary.
+   Mobile-first: thumbnail stacks above the body in a single
+   column; grid/queue layouts are applied by parent containers.
+   ============================================================ */
+
+.sr-video-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sr-video-card__thumbnail {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--sr-color-surface);
+  overflow: hidden;
+}
+
+.sr-video-card__thumbnail-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sr-video-card__thumbnail--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sr-color-text-muted);
+}
+
+.sr-video-card__thumbnail--fallback svg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.sr-video-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sr-space-2);
+  padding: var(--sr-space-4);
+}
+
+.sr-video-card__title {
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-md);
+  font-weight: 600;
+  color: var(--sr-color-text);
+  overflow-wrap: break-word;
+}
+
+.sr-video-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sr-space-2);
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-sm);
+  color: var(--sr-color-text-muted);
+}
+
+.sr-video-card__separator {
+  color: var(--sr-color-text-muted);
+}
+
+.sr-video-card__footer {
+  margin-top: var(--sr-space-1);
+}

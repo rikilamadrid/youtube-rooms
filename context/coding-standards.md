@@ -32,6 +32,9 @@
 - Add concise accessibility notes in story docs or descriptions.
 - Use mock data in stories, not live YouTube API calls.
 - Storybook should import the same design tokens as the app.
+- Use a `play` function (import `expect`/`fn` from `storybook/test`) for non-visual or complex interaction behavior — clicks, keyboard activation, disabled/loading state, callback firing, accessible-name checks. Use `fn()` mocks as `args` for any callback prop so `play` functions can assert on calls.
+- Play functions live alongside RTL tests, not instead of them: use RTL for unit-level component logic, play functions for the interaction paths worth seeing/debugging in the Storybook Interactions panel.
+- Visual regression testing (e.g. Chromatic) is not yet adopted in this repo — revisit only when explicitly scoped into a feature.
 
 ## Testing
 
