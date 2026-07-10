@@ -122,4 +122,56 @@ describe('VideoCard', () => {
 
     expect(handleAddToQueue).toHaveBeenCalledTimes(1);
   });
+
+  it('omits the "Add to queue" button when onAddToQueue is not provided', () => {
+    render(
+      <VideoCard video={video} channelTitle="Weeknight Cooking Club" onRemoveFromQueue={vi.fn()} />,
+    );
+
+    expect(screen.queryByRole('button', { name: /add .* to queue/i })).not.toBeInTheDocument();
+  });
+
+  it('fires onRemoveFromQueue with the video id when the remove button is clicked', async () => {
+    const user = userEvent.setup();
+    const handleRemove = vi.fn();
+    render(
+      <VideoCard video={video} channelTitle="Weeknight Cooking Club" onRemoveFromQueue={handleRemove} />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Remove Weeknight Pasta in 20 Minutes from queue' }),
+    );
+
+    expect(handleRemove).toHaveBeenCalledWith('video-1');
+  });
+
+  it('fires onSetActive with the video id when the set-active button is clicked', async () => {
+    const user = userEvent.setup();
+    const handleSetActive = vi.fn();
+    render(
+      <VideoCard video={video} channelTitle="Weeknight Cooking Club" onSetActive={handleSetActive} />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Set Weeknight Pasta in 20 Minutes as active' }),
+    );
+
+    expect(handleSetActive).toHaveBeenCalledWith('video-1');
+  });
+
+  it('renders a non-color-only active indicator and a disabled set-active button when isActive is true', () => {
+    render(
+      <VideoCard
+        video={video}
+        channelTitle="Weeknight Cooking Club"
+        onSetActive={vi.fn()}
+        isActive
+      />,
+    );
+
+    expect(screen.getByText('Now playing', { selector: '.sr-badge__label' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Weeknight Pasta in 20 Minutes is the active video' }),
+    ).toBeDisabled();
+  });
 });

@@ -1,0 +1,25 @@
+/* ============================================================
+   WatchQueuePanel
+   Mobile-first, single-column list of VideoCards representing
+   the room's queue. A visible border distinguishes it from the
+   video feed above so the two lists aren't confused.
+   ============================================================ */
+
+.sr-watch-queue-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-4);
+  margin: 0;
+  padding: var(--sr-space-4);
+  list-style: none;
+  border: var(--sr-border-width-sm) solid var(--sr-color-border);
+  border-radius: var(--sr-radius-lg);
+}
+
+.sr-watch-queue-panel--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sr-space-8) var(--sr-space-4);
+}

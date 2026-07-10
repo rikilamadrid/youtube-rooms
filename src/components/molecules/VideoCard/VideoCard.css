@@ -69,5 +69,8 @@
 }
 
 .sr-video-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sr-space-2);
   margin-top: var(--sr-space-1);
 }
