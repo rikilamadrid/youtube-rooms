@@ -59,4 +59,14 @@ export const mockRooms: Room[] = [
     createdAt: '2026-07-05T09:00:00.000Z',
     updatedAt: '2026-07-05T09:00:00.000Z',
   },
+  {
+    id: 'room-jazz-theory',
+    name: 'Jazz Theory',
+    description: 'A room for one channel that hasn’t posted anything yet.',
+    // Edge case: room with a channel assigned, but that channel has no
+    // videos in mockVideos.ts (channel-adam-neely).
+    channelIds: ['channel-adam-neely'],
+    createdAt: '2026-07-06T09:00:00.000Z',
+    updatedAt: '2026-07-06T09:00:00.000Z',
+  },
 ];

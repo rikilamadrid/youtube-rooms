@@ -1,4 +1,4 @@
-# Current Feature: Dashboard Shell
+# Current Feature: Room Detail Layout
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
@@ -8,34 +8,38 @@ In Progress
 
 ## Goals
 
-- Introduce client-side routing (`react-router-dom`) with at least `/` and a placeholder `/rooms/:roomId` route.
-- Build a minimal app shell (header/nav + layout container) using design tokens.
-- Build the `/` dashboard page composing `RoomGrid` with `mockRooms` (channel counts derived from `mockChannels`) from feature 11.
-- Wire `RoomCard`/`RoomGrid` navigation callbacks to real route transitions to `/rooms/:roomId`.
-- App shell and dashboard page are mobile-first responsive.
-- "No rooms" case handled naturally via `RoomGrid`'s existing `EmptyState` support.
-- `/rooms/:roomId` is a minimal placeholder page only (real detail UI is feature 13).
+- Replace the feature-12 placeholder `/rooms/:roomId` page with a real room detail view.
+- Resolve `roomId` from the route param, look up the room in mock data, and show a graceful "room not found" state if it doesn't exist.
+- Render a room header: name, description, and channel count.
+- Resolve the room's `channelIds` to their videos (from `mockVideos`), merge, and sort by `publishedAt` descending.
+- Render the resulting list using `VideoCard` (feature 08); introduce a small `VideoFeed` organism only if the composition logic is non-trivial enough to warrant its own component and tests.
+- Handle three distinct empty cases: room has no channels assigned, room has channels but no videos, room id does not exist.
+- Wire each `VideoCard`'s "Add to queue" action to a callback, even as a no-op/console-logged placeholder (queue itself is feature 14).
 
 ## Notes
 
-- Only new dependency: `react-router-dom`. No state management libraries.
-- Keep `DashboardPage` a thin composition layer: pull mock data, pass to `RoomGrid`, handle navigation via `useNavigate`/`Link`.
-- Maintain focus management expectations on route change; keep app state close to where it's needed.
-- Likely files: `src/app/App.tsx`, `src/app/AppShell.tsx`/`.css`, `src/app/routes/DashboardPage.tsx`, `src/app/routes/RoomDetailPage.tsx` (+ tests for both).
-- Out of scope: real room detail content, `/channels`/`/settings` routes, room creation/editing, persisted/local-storage state.
-- Acceptance: dashboard renders from mock data; clicking/keyboard-activating a room navigates to `/rooms/:roomId` with correct placeholder content; responsive across widths; tests cover room count render + navigation; `npm run build` passes; `CHANGELOG.md` updated under `## [Unreleased]`.
-- Full spec: `context/features/12-dashboard-shell.md`.
+- Reuse `mockRooms`, `mockChannels`, `mockVideos` from feature 11; do not introduce parallel fixture data.
+- Keep data resolution (room → channels → videos) as a small, testable utility rather than inline JSX logic.
+- Follow the `Room`/`VideoSummary` contracts exactly; extend shared types in `src/types/` only if a real gap is found, and note it in the PR.
+- Mobile-first single-column video list; do not over-engineer a grid.
+- Distinguish the three empty states with distinct, honest copy.
+- Maintain a clear heading hierarchy: room title as the primary heading, "Latest videos" as a secondary heading.
+- Out of scope: watch queue panel/UI (feature 14), video playback/embedding, sort/filter controls, editing room membership.
+- Likely files: `src/app/routes/RoomDetailPage.tsx` (+ `.test.tsx`), possibly `src/components/organisms/VideoFeed/`, possibly `src/utils/sortVideosByRecency.ts` (+ tests).
+- Acceptance: navigating to `/rooms/:roomId` for a real room shows name, description, and sorted videos; unknown id shows not-found state; distinct empty states for no-channels vs. channels-with-no-videos; tests cover all four cases plus any extracted utility; `npm run build` passes; `CHANGELOG.md` updated under `## [Unreleased]`.
+- Full spec: `context/features/13-room-detail-layout.md`.
 
 ---
 
 ## Up next
 
-- 13 — Room detail layout
+- 14 — Watch queue UI
 
 ---
 
 ## Recently landed
 
+- Feature 12 — Dashboard Shell (2026-07-09): introduced client-side routing (`react-router-dom`) via `App.tsx` rendering a `BrowserRouter` with a `/` dashboard route and a `/rooms/:roomId` route, both nested under a shared `AppShell` layout. Built `AppShell` (`src/app/AppShell.tsx`/`.css`) as a minimal, token-driven header (brand link back to `/`) + content container, rendering route content via `Outlet`. Built `DashboardPage` (`src/app/routes/DashboardPage.tsx`) as a thin composition of `RoomGrid` with `mockRooms`, navigating to `/rooms/:roomId` via `useNavigate` on room selection. Built `RoomDetailPage` (`src/app/routes/RoomDetailPage.tsx`) as a minimal placeholder that resolves the room from `mockRooms` by `useParams`, showing the room name or a "Room not found" state with a link back to `/` — full detail UI is feature 13. Verified `typecheck`, `lint`, `test`, and `build` all pass. Landed via PR #16.
 - Feature 11 — Mock Data Models And Fixtures (2026-07-09): finalized the four Core Data Model types in `src/types/` (added `channel.ts`/`queue.ts`; `room.ts`/`video.ts` already matched) and added one authoritative, cross-referenced set of typed mock fixtures in `src/data/` — 6 rooms, 10 channels, 16 videos, 4 queues — with deliberate edge cases (empty-channel room, channel with no videos, videos missing thumbnail/duration, queue with no active video). Verified `typecheck`, `lint`, `test`, and `build` all pass. Landed via PR #15.
 - Project kickoff documentation pack generated on 2026-07-07.
 - Feature 01 — Project Foundation (2026-07-08): scaffolded Vite + React + TypeScript (strict) app, Storybook (react-vite + a11y addon, default example stories), Vitest + React Testing Library + jest-dom + user-event with a real `App` test, ESLint (flat config) + Prettier, the base `src/` folder structure, placeholder `src/styles/tokens.css`, npm scripts, GitHub Actions CI (typecheck/lint/test/build/build-storybook), and the `CHANGELOG.md` entry. Trimmed the default `storybook init` output down to just `@storybook/addon-a11y` (dropped addon-vitest/Playwright, Chromatic, docs, and mcp addons, plus the default `Configure.mdx` welcome page which failed to build under Vite 8's rolldown bundler) to stay in scope for a lean foundation.

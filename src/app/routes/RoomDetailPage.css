@@ -1,0 +1,16 @@
+.sr-room-detail__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sr-space-2);
+  margin-bottom: var(--sr-space-6);
+}
+
+.sr-room-detail__description {
+  color: var(--sr-color-text-muted);
+  max-width: 60ch;
+}
+
+.sr-room-detail__feed-heading {
+  margin-bottom: var(--sr-space-4);
+}
