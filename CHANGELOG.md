@@ -31,10 +31,19 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 - `@storybook/addon-vitest`, wired into `vite.config.ts` as a second Vitest project (alongside the existing jsdom unit-test project) that runs every Storybook story as a headless Chromium browser test via Playwright; CI now installs Chromium (`npx playwright install chromium --with-deps`) before `npm run test`.
 - `Room` domain type (`src/types/room.ts`), matching the `Room` contract in `context/project-overview.md`.
 - `RoomCard` molecule (`src/components/molecules/RoomCard/`): composes `Card` and `Badge` to represent a `Room` as an interactive, route-agnostic surface (`href` renders a link, `onClick` alone renders a button). Renders the room name, optional description (clamped to two lines), and a channel-count `Badge` derived from an optional `channelCount` prop or `room.channelIds.length`, with a distinct "No channels yet" guidance state instead of "0 channels". Renders an optional icon slot resolved from `iconName` (falling back to the room name's initial) and gives the interactive surface an explicit accessible name (`Open {name} room`). Includes Storybook stories for a typical room, empty-channel room, long name/description, with/without icon, and button usage, plus RTL tests covering rendered content, accessible name, link/button rendering, keyboard activation, and the empty-channel state.
+- `VideoSummary` domain type (`src/types/video.ts`), matching the contract in `context/project-overview.md`.
+- `formatPublishedDate` and `formatDuration` utilities (`src/utils/`): format an ISO 8601 timestamp as a short relative date ("3h ago", falling back to an absolute UTC date like "Jun 1, 2026" once older than a week) and a YouTube-style ISO 8601 duration ("PT1H2M3S") as clock time ("1:02:03"), each with its own unit tests.
+- `VideoCard` molecule (`src/components/molecules/VideoCard/`): composes `Card`, `Badge`, and `Button` to represent a `VideoSummary` — thumbnail (decorative `alt=""`, with a decorative fallback icon when `thumbnailUrl` is missing), title, channel name (passed in by the parent), published date, duration (omitted when missing), and a "Watched" `Badge` when `video.watched` is true. Exposes an `onAddToQueue(videoId)` callback via an "Add to queue" `Button` with a video-specific accessible name (`Add {title} to queue`) — stays presentational, owns no queue logic. Includes Storybook stories for a typical video, watched video, missing thumbnail, missing duration, long title, and keyboard activation, plus RTL tests covering rendered metadata, the conditional watched badge, thumbnail/fallback decorativeness, accessible name correctness, and callback firing via mouse and keyboard.
+- Storybook `play` functions (via `storybook/test`, run as real browser interaction tests by `addon-vitest`) for interaction/behavior coverage: added to the new `VideoCard` stories, and retrofitted onto existing interactive stories for `Button` (click firing, disabled/loading suppressing the callback, icon-only accessible name, link role/href), `Card` (interactive-as-link href, interactive-as-button click + keyboard activation), and `RoomCard` (link href, button click + keyboard activation). Documented as the standing convention for non-visual/interaction story coverage in `context/coding-standards.md`.
 
 ### Removed
 
 - Default Storybook CLI boilerplate (`src/stories/` — `Button`, `Header`, `Page` components and stories).
+
+### Fixed
+
+- `RoomCard` was missing `tags: ['autodocs']`, so it never got a generated docs page unlike the other atoms/molecules. Added it, matching the convention set for `Button`, `Badge`, and `Card`.
+- Added JSDoc component and prop descriptions to `Badge`, `Button`, `Card`, `RoomCard`, and `VideoCard` so every autodocs page has a real component description and per-prop descriptions in the generated controls table, instead of a bare canvas + untitled props list.
 
 ### Changed
 

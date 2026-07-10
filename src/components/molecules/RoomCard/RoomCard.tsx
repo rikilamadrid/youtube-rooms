@@ -6,17 +6,22 @@ import type { Room } from '../../../types/room';
 import './RoomCard.css';
 
 type RoomCardBaseProps = {
+  /** The room to represent. */
   room: Room;
+  /** Overrides the channel-count badge; defaults to `room.channelIds.length`. */
   channelCount?: number;
 };
 
 type RoomCardAsLinkProps = RoomCardBaseProps & {
+  /** Renders RoomCard as a link to this URL. */
   href: string;
+  /** Optional extra click handler; fires alongside navigation. */
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 };
 
 type RoomCardAsButtonProps = RoomCardBaseProps & {
   href?: undefined;
+  /** Renders RoomCard as a button; fires on click or keyboard activation. */
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 };
 
@@ -54,6 +59,13 @@ function getChannelBadge(count: number): { tone: BadgeTone; label: string } {
   return { tone: 'accent', label: `${count} channel${count === 1 ? '' : 's'}` };
 }
 
+/**
+ * Represents a `Room` as an interactive, route-agnostic card surface for
+ * room dashboards and pickers. Renders as a real `<a>` when `href` is given,
+ * or a `<button>` when only `onClick` is given, and gives the surface an
+ * explicit accessible name ("Open {name} room") rather than relying on the
+ * room name and channel count alone.
+ */
 export function RoomCard(props: RoomCardProps) {
   const { room, channelCount } = props;
   const count = channelCount ?? room.channelIds.length;

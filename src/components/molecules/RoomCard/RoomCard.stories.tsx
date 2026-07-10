@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ReactNode } from 'react';
+import { expect, fn } from 'storybook/test';
 import type { Room } from '../../../types/room';
 import { RoomCard } from './RoomCard';
+
+const handleRoomCardClick = fn();
 
 const baseRoom: Room = {
   id: 'room-1',
@@ -15,6 +18,7 @@ const baseRoom: Room = {
 const meta: Meta<typeof RoomCard> = {
   title: 'Molecules/RoomCard',
   component: RoomCard,
+  tags: ['autodocs'],
   parameters: { layout: 'centered' },
 };
 
@@ -32,6 +36,11 @@ export const Typical: Story = {
       <RoomCard room={baseRoom} href="#" />
     </Frame>
   ),
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole('link', { name: 'Open Weeknight Cooking room' });
+
+    await expect(link).toHaveAttribute('href', '#');
+  },
 };
 
 export const EmptyChannelRoom: Story = {
@@ -87,7 +96,18 @@ export const WithoutIcon: Story = {
 export const AsButton: Story = {
   render: () => (
     <Frame>
-      <RoomCard room={baseRoom} onClick={() => {}} />
+      <RoomCard room={baseRoom} onClick={handleRoomCardClick} />
     </Frame>
   ),
+  play: async ({ canvas, userEvent }) => {
+    handleRoomCardClick.mockClear();
+    const button = canvas.getByRole('button', { name: 'Open Weeknight Cooking room' });
+
+    await userEvent.click(button);
+    await expect(handleRoomCardClick).toHaveBeenCalledTimes(1);
+
+    button.focus();
+    await userEvent.keyboard('{Enter}');
+    await expect(handleRoomCardClick).toHaveBeenCalledTimes(2);
+  },
 };

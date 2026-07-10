@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, fn } from 'storybook/test';
 import { Card } from './Card';
+
+const handleCardButtonClick = fn();
 
 const meta: Meta<typeof Card> = {
   title: 'Atoms/Card',
@@ -42,16 +45,32 @@ export const InteractiveAsLink: Story = {
       </Card>
     </div>
   ),
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole('link');
+
+    await expect(link).toHaveAttribute('href', '#');
+  },
 };
 
 export const InteractiveAsButton: Story = {
   render: (args) => (
     <div style={{ width: '20rem' }}>
-      <Card as="button" onClick={() => {}} padding={args.padding}>
+      <Card as="button" onClick={handleCardButtonClick} padding={args.padding}>
         <RoomSummary />
       </Card>
     </div>
   ),
+  play: async ({ canvas, userEvent }) => {
+    handleCardButtonClick.mockClear();
+    const button = canvas.getByRole('button');
+
+    await userEvent.click(button);
+    await expect(handleCardButtonClick).toHaveBeenCalledTimes(1);
+
+    button.focus();
+    await userEvent.keyboard('{Enter}');
+    await expect(handleCardButtonClick).toHaveBeenCalledTimes(2);
+  },
 };
 
 export const VariedContentLengths: Story = {

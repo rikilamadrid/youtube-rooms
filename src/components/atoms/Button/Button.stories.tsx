@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, fn } from 'storybook/test';
 import { Button } from './Button';
 
 function PlusIcon() {
@@ -24,6 +25,7 @@ const meta: Meta<typeof Button> = {
   parameters: { layout: 'centered' },
   args: {
     children: 'Create room',
+    onClick: fn(),
   },
   argTypes: {
     variant: { control: 'select', options: ['primary', 'secondary', 'ghost'] },
@@ -35,7 +37,15 @@ export default meta;
 
 type Story = StoryObj<typeof Button>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ args, canvas, userEvent }) => {
+    const button = canvas.getByRole('button', { name: 'Create room' });
+
+    await userEvent.click(button);
+
+    await expect(args.onClick).toHaveBeenCalledTimes(1);
+  },
+};
 
 export const Variants: Story = {
   render: (args) => (
@@ -68,10 +78,28 @@ export const Sizes: Story = {
 
 export const Disabled: Story = {
   args: { disabled: true },
+  play: async ({ args, canvas, userEvent }) => {
+    const button = canvas.getByRole('button', { name: 'Create room' });
+
+    await expect(button).toBeDisabled();
+
+    await userEvent.click(button);
+
+    await expect(args.onClick).not.toHaveBeenCalled();
+  },
 };
 
 export const Loading: Story = {
   args: { loading: true },
+  play: async ({ args, canvas, userEvent }) => {
+    const button = canvas.getByRole('button', { name: 'Create room' });
+
+    await expect(button).toHaveAttribute('aria-busy', 'true');
+
+    await userEvent.click(button);
+
+    await expect(args.onClick).not.toHaveBeenCalled();
+  },
 };
 
 export const WithLeadingIcon: Story = {
@@ -88,6 +116,9 @@ export const IconOnly: Story = {
     iconLeft: <PlusIcon />,
     'aria-label': 'Add to queue',
   },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('button', { name: 'Add to queue' })).toBeInTheDocument();
+  },
 };
 
 export const AsLink: Story = {
@@ -95,5 +126,10 @@ export const AsLink: Story = {
     as: 'a',
     href: '#',
     children: 'Go to rooms',
+  },
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole('link', { name: 'Go to rooms' });
+
+    await expect(link).toHaveAttribute('href', '#');
   },
 };

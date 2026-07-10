@@ -10,23 +10,33 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 export type ButtonSize = 'sm' | 'md';
 
 type ButtonBaseProps = {
+  /** Visual style; defaults to `primary`. */
   variant?: ButtonVariant;
+  /** Sizing scale; defaults to `md`. */
   size?: ButtonSize;
+  /** Shows a spinner and marks the button `aria-busy`, suppressing clicks while preserving its accessible name. */
   loading?: boolean;
+  /** Disables the button/link and suppresses clicks. */
   disabled?: boolean;
+  /** Optional leading icon; hidden while `loading`. */
   iconLeft?: ReactNode;
+  /** Optional trailing icon; hidden while `loading`. */
   iconRight?: ReactNode;
+  /** Visible label. Omit and pass `aria-label` for an icon-only button. */
   children?: ReactNode;
 };
 
 type ButtonAsButtonProps = ButtonBaseProps &
   Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
+    /** Renders a real `<button>`. This is the default. */
     as?: 'button';
   };
 
 type ButtonAsAnchorProps = ButtonBaseProps &
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'children'> & {
+    /** Renders a real `<a>` instead of a `<button>`. */
     as: 'a';
+    /** Required when `as="a"`. */
     href: string;
   };
 
@@ -100,6 +110,12 @@ function renderContent(loading: boolean, iconLeft: ReactNode, iconRight: ReactNo
   );
 }
 
+/**
+ * A token-driven action trigger, rendering a real `<button>` by default or
+ * a real `<a>` via `as="a"`/`href`. Supports `primary`/`secondary`/`ghost`
+ * variants, `sm`/`md` sizes, an accessible `loading` state, and icon-only
+ * usage (omit `children`, pass `aria-label`).
+ */
 export function Button(props: ButtonProps) {
   if (props.as === 'a') {
     const {
