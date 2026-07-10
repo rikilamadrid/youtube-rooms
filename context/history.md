@@ -4,6 +4,16 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-09 — Feature 11: Mock Data Models And Fixtures
+
+- Added the `SubscriptionChannel` and `WatchQueue` domain types (`src/types/channel.ts`, `src/types/queue.ts`), matching the contracts in `context/project-overview.md` and completing the four Core Data Models alongside the existing `Room` and `VideoSummary` types.
+- Added one authoritative, cross-referenced set of typed mock data fixtures under `src/data/`: `mockChannels.ts` (10 channels, all `isMock: true`), `mockRooms.ts` (6 rooms: Coding, Cooking, Sketching, Gaming, Music, and an empty "Someday" room), `mockVideos.ts` (16 videos), and `mockQueues.ts` (4 queues) — all with stable, mutually-resolving ids.
+- Included deliberate edge cases: a room with zero channels, a channel with zero recent videos, videos missing a thumbnail or a duration, and a queue with no active video.
+- Verified cross-referential consistency (every `channelId`, `roomId`, and video id in a queue resolves to a real record) with a one-off script; no dangling ids.
+- No accessor helpers added — no concrete consumer exists yet, per the spec's guidance against speculative query APIs.
+- Verified with `npm run typecheck`, `npm run lint`, `npm run test` (110 tests), and `npm run build`.
+- Landed via PR #15.
+
 ### 2026-07-09 — Feature 09: EmptyState Molecule
 
 - Added the `EmptyState` molecule (`src/components/molecules/EmptyState/`): a fully prop-driven, centered placeholder for "nothing here yet" surfaces (empty room lists, empty channel assignments, empty video feeds, empty queues) — no hardcoded copy for any specific surface.

@@ -1,27 +1,18 @@
-# Current Feature: Mock Data Models And Fixtures
+# Current Feature
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-In Progress
+<!-- Not Started | In Progress | Complete -->
 
 ## Goals
 
-- Finalize shared TypeScript domain types in `src/types/`: `channel.ts` (`SubscriptionChannel`), `room.ts` (`Room`), `video.ts` (`VideoSummary`), `queue.ts` (`WatchQueue`), matching `context/project-overview.md`'s Core Data Models (evolve fields only for a genuine gap, and document any deviation).
-- Build realistic, varied typed mock data fixtures (`src/data/mockChannels.ts`, `mockRooms.ts`, `mockVideos.ts`, `mockQueues.ts`, or a consolidated `mockData.ts`) covering at least 4-5 rooms (e.g. Coding, Cooking, Sketching, Gaming, Music) with cross-referenced, internally consistent IDs.
-- Include deliberate edge cases: a room with zero channels, a channel with zero recent videos, a video with missing optional fields (no thumbnail, no duration), a queue with no active video.
-- Mark all mock records with `isMock: true` where the type supports it.
-- Add small typed accessor helpers only if a concrete consumer needs them, each with a unit test — no speculative query APIs.
+<!-- Bullet points of what success looks like -->
 
 ## Notes
 
-- Out of scope: wiring mock data into actual pages/routes (features 12-14), persistence/local storage (Build Phase 4), real YouTube API shapes (Build Phase 5+), rewriting existing component stories to use shared fixtures (fast-follow, not required).
-- References: `context/project-overview.md` (Core Data Models), `context/coding-standards.md` (Data section), `context/features/07-room-card-molecule.md`, `context/features/08-video-card-molecule.md`.
-- Suggested branch: `feature/11-mock-data-fixtures`.
-- Suggested commit: `feat: add typed mock data models and fixtures`.
-- Verification: `npm run test`, `npm run typecheck`, `npm run lint`, `npm run build`; manually inspect fixtures for cross-referential consistency.
-- Full spec: `context/features/11-mock-data-models-and-fixtures.md`.
+<!-- Additional context, constraints, or details from spec -->
 
 ---
 
@@ -33,6 +24,7 @@ In Progress
 
 ## Recently landed
 
+- Feature 11 — Mock Data Models And Fixtures (2026-07-09): finalized the four Core Data Model types in `src/types/` (added `channel.ts`/`queue.ts`; `room.ts`/`video.ts` already matched) and added one authoritative, cross-referenced set of typed mock fixtures in `src/data/` — 6 rooms, 10 channels, 16 videos, 4 queues — with deliberate edge cases (empty-channel room, channel with no videos, videos missing thumbnail/duration, queue with no active video). Verified `typecheck`, `lint`, `test`, and `build` all pass. Landed via PR #15.
 - Project kickoff documentation pack generated on 2026-07-07.
 - Feature 01 — Project Foundation (2026-07-08): scaffolded Vite + React + TypeScript (strict) app, Storybook (react-vite + a11y addon, default example stories), Vitest + React Testing Library + jest-dom + user-event with a real `App` test, ESLint (flat config) + Prettier, the base `src/` folder structure, placeholder `src/styles/tokens.css`, npm scripts, GitHub Actions CI (typecheck/lint/test/build/build-storybook), and the `CHANGELOG.md` entry. Trimmed the default `storybook init` output down to just `@storybook/addon-a11y` (dropped addon-vitest/Playwright, Chromatic, docs, and mcp addons, plus the default `Configure.mdx` welcome page which failed to build under Vite 8's rolldown bundler) to stay in scope for a lean foundation.
 - Feature 02 — Design Token Foundation (2026-07-08): built out the full `--sr-` prefixed token set in `src/styles/tokens.css` (color, typography, spacing, radius, border, shadow, motion, z-index, layout widths) with a `prefers-reduced-motion` fallback; added `src/styles/reset.css`; consolidated `src/styles/global.css` to import tokens + reset and set base `html`/`body` styles (plus a token-based `:focus-visible` ring) from tokens only; wired the single global stylesheet into both `src/main.tsx` and `.storybook/preview.tsx` so app and Storybook render identically (verified via matching compiled CSS and live screenshots).
