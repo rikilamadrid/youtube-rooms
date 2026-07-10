@@ -4,6 +4,26 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-09 — Feature 09: EmptyState Molecule
+
+- Added the `EmptyState` molecule (`src/components/molecules/EmptyState/`): a fully prop-driven, centered placeholder for "nothing here yet" surfaces (empty room lists, empty channel assignments, empty video feeds, empty queues) — no hardcoded copy for any specific surface.
+- Accepts a `title` (rendered as a real heading, with a `headingLevel` prop so callers can pick the level that fits the surrounding page outline), optional `description`, optional decorative `icon` (hidden from assistive tech), and an optional `actionLabel` + `onAction` pair rendered via the `Button` atom.
+- Added Storybook stories for no-rooms, no-channels-in-room, no-videos-in-feed, empty-queue, a no-action informational variant, and an in-page-context story verifying correct `h1`→`h2`→`h3` heading nesting.
+- Added RTL tests covering rendered title/description, action callback firing, the no-action/no-crash case, heading level selection, and icon decorativeness.
+- Verified with `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build`, and `npm run build-storybook`.
+
+### 2026-07-09 — Feature 08: VideoCard Molecule
+
+- Added the `VideoSummary` domain type (`src/types/video.ts`), matching the contract in `context/project-overview.md`.
+- Added the `VideoCard` molecule (`src/components/molecules/VideoCard/`), composing `Card`, `Badge`, and `Button` to represent a video: thumbnail (decorative `alt=""`, with a decorative fallback icon when `thumbnailUrl` is missing), title, channel name (passed in by the parent), published date, duration (omitted when missing), and a "Watched" `Badge` when `video.watched` is true.
+- Exposes an `onAddToQueue(videoId)` callback via an "Add to queue" `Button` with a video-specific accessible name (`Add {title} to queue`) — stays presentational, owns no queue logic.
+- Added `formatPublishedDate` and `formatDuration` utilities (`src/utils/`), each with their own unit tests.
+- Added Storybook stories for a typical video, watched video, missing thumbnail, missing duration, long title, and keyboard activation.
+- Added RTL tests covering rendered metadata, the conditional watched badge, thumbnail/fallback decorativeness, accessible name correctness, and callback firing via mouse and keyboard.
+- Adopted Storybook `play` functions (via `storybook/test`) as the standing convention for interaction/behavior story coverage, documented in `context/coding-standards.md`, and retrofitted them onto existing interactive stories for `Button`, `Card`, and `RoomCard`.
+- Verified with `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run build`.
+- Landed via PR #12.
+
 ### 2026-07-09 — Feature 07: RoomCard Molecule
 
 - Added the `Room` domain type (`src/types/room.ts`), matching the `Room` contract in `context/project-overview.md`.
