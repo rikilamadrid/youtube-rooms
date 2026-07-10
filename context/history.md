@@ -4,6 +4,15 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-10 — Feature 13: Room Detail Layout
+
+- Replaced the feature-12 placeholder `/rooms/:roomId` page with a real room detail view.
+- Added `resolveRoomVideoFeed` (`src/utils/resolveRoomVideoFeed.ts`): resolves a room's `channelIds` to their videos from `mockVideos`, attaches each video's resolved channel title, and sorts by `publishedAt` descending; unit-tested for ordering, channel-title resolution, and the no-channels/no-videos/single-video edge cases.
+- Added the `VideoFeed` organism (`src/components/organisms/VideoFeed/`): a mobile-first, single-column list of `VideoCard`s, or an `EmptyState` with caller-supplied title/description when there are none. Storybook stories cover a typical feed, a single video, and both empty-state variants; RTL tests cover rendered count, callback forwarding, and the empty state.
+- `RoomDetailPage` (`src/app/routes/RoomDetailPage.tsx`) now renders a room header (name, description, channel-count `Badge`) and a "Latest videos" `VideoFeed`, with three distinct states: room not found, room with no channels, and room with channels but no recent videos. Each `VideoCard`'s "Add to queue" action is wired to a placeholder console-logged callback — the real watch queue is feature 14.
+- Added `room-jazz-theory` mock room (`src/data/mockRooms.ts`): one channel assigned (`channel-adam-neely`) with zero videos, completing the "channels assigned but no recent videos" edge case that feature 11's fixtures didn't cover.
+- Verified `typecheck`, `lint`, `test` (130 jsdom tests + 50 real-Chromium Storybook interaction tests via `addon-vitest`), `build`, and `build-storybook` all pass. Landed via PR #17.
+
 ### 2026-07-09 — Feature 12: Dashboard Shell
 
 - Introduced client-side routing with `react-router-dom` (the only new dependency): `App.tsx` renders a `BrowserRouter` with a `/` dashboard route and a `/rooms/:roomId` route, both nested under a shared `AppShell` layout.
