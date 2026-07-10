@@ -1,0 +1,32 @@
+/* ============================================================
+   RoomGrid
+   Responsive, mobile-first grid of RoomCards. auto-fill/minmax
+   reflows from a single column up to as many as fit, without
+   hand-authored breakpoints.
+   ============================================================ */
+
+.sr-room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--sr-space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sr-room-grid__item {
+  display: flex;
+}
+
+.sr-room-grid__item > * {
+  width: 100%;
+}
+
+.sr-room-grid--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--sr-space-8) var(--sr-space-4);
+}

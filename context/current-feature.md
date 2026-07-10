@@ -1,24 +1,35 @@
-# Current Feature
+# Current Feature: Room Grid Organism
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-<!-- Not Started | In Progress | Complete -->
+In Progress
 
 ## Goals
 
-<!-- Bullet points of what success looks like -->
+- Build `RoomGrid` organism (`src/components/organisms/RoomGrid/`) that renders one `RoomCard` per `Room` in an array.
+- Render `EmptyState` (with "no rooms yet" copy and an optional create-room action callback) when the array is empty.
+- Responsive CSS grid: single column mobile-first, more columns at tablet/desktop, gap from spacing tokens.
+- Sensible reading/tab order regardless of column count; handles 1 room and 12+ rooms gracefully.
+- Storybook stories: empty, single room, few rooms, many rooms (12+), verified across mobile/tablet/desktop viewports.
+- Tests: correct `RoomCard` count for given data, `EmptyState` on empty array, no crash with a single room.
+- `npm run build` and `npm run build-storybook` pass; `CHANGELOG.md` updated under `## [Unreleased]`.
 
 ## Notes
 
-<!-- Additional context, constraints, or details from spec -->
+- Compose existing `RoomCard` (feature 07) and `EmptyState` (feature 09) — no new card/empty-state logic duplicated here.
+- Stay presentational: receives rooms and callbacks as props, does not fetch data; navigation destination logic is out of scope (wired in feature 12).
+- Sorting/filtering/searching and room creation/editing UI are out of scope.
+- Use CSS Grid with `auto-fill`/`minmax` or explicit breakpoints, whichever is simpler to reason about and test visually.
+- Suggested branch: `feature/10-room-grid`. Suggested commit: `feat: add room grid organism`.
+- Spec: `context/features/10-room-grid-organism.md`.
 
 ---
 
 ## Up next
 
-- 10 — Room grid organism
+(none listed — next up after this feature is 11 — Mock data models and fixtures)
 
 ---
 
