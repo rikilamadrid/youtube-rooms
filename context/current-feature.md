@@ -8,8 +8,8 @@ In Progress
 
 ### Sub-branch plan (feature is split across multiple PRs)
 
-1. `feature/18-1-youtube-auth` — OAuth read-only sign-in service + token storage/refresh (`src/services/youtubeAuth.ts`) **(implemented, pending review/commit)**
-2. `feature/18-2-youtube-api-fetch` — `youtubeApi.ts` (subscriptions/channels/playlistItems/videos calls) + `normalizeYoutubeData.ts`, with unit tests on fixtures
+1. `feature/18-1-youtube-auth` — OAuth read-only sign-in service + token storage/refresh (`src/services/youtubeAuth.ts`) **(merged)**
+2. `feature/18-2-youtube-api-fetch` — `youtubeApi.ts` (subscriptions/channels/playlistItems/videos calls) + `normalizeYoutubeData.ts`, with unit tests on fixtures **(implemented, pending review/commit)**
 3. `feature/18-3-youtube-settings-ui` — `/settings` surface + `useYoutubeSync` hook, sync status UI, error-state copy
 4. `feature/18-4-youtube-wire-data` — wire real data into existing dashboard/room-detail/queue components, decide mock-data fallback strategy, final CHANGELOG entry
 
