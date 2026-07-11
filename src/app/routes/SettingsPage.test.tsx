@@ -1,19 +1,19 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useYoutubeSync } from '../../hooks/useYoutubeSync';
+import { useYoutubeSyncContext } from '../../hooks/YoutubeSyncContext';
 import { SettingsPage } from './SettingsPage';
 
-vi.mock('../../hooks/useYoutubeSync');
+vi.mock('../../hooks/YoutubeSyncContext');
 
-const mockedUseYoutubeSync = vi.mocked(useYoutubeSync);
+const mockedUseYoutubeSyncContext = vi.mocked(useYoutubeSyncContext);
 
 const connect = vi.fn();
 const disconnect = vi.fn();
 const sync = vi.fn();
 
-function stubSync(overrides: Partial<ReturnType<typeof useYoutubeSync>> = {}) {
-  mockedUseYoutubeSync.mockReturnValue({
+function stubSync(overrides: Partial<ReturnType<typeof useYoutubeSyncContext>> = {}) {
+  mockedUseYoutubeSyncContext.mockReturnValue({
     status: 'disconnected',
     error: null,
     lastSyncedAt: null,

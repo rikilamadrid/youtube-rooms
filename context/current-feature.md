@@ -11,9 +11,11 @@ In Progress
 1. `feature/18-1-youtube-auth` — OAuth read-only sign-in service + token storage/refresh (`src/services/youtubeAuth.ts`) **(merged)**
 2. `feature/18-2-youtube-api-fetch` — `youtubeApi.ts` (subscriptions/channels/playlistItems/videos calls) + `normalizeYoutubeData.ts`, with unit tests on fixtures **(merged)**
 3. `feature/18-3-youtube-settings-ui` — `/settings` surface + `useYoutubeSync` hook, sync status UI, error-state copy **(merged)**
-4. `feature/18-4-youtube-wire-data` — wire real data into existing dashboard/room-detail/queue components, decide mock-data fallback strategy, final CHANGELOG entry **(next)**
+4. `feature/18-4-youtube-wire-data` — narrowed scope (see Notes below): lift `useYoutubeSync` into a `YoutubeSyncProvider` context so synced data survives navigation, add a read-only `/channels` view proving real synced videos render through the existing `VideoFeed`/`VideoCard` components. Dashboard/room-detail/queue stay on mock data. **(in progress)**
 
 Each sub-branch gets its own PR per the normal workflow (branch → implement → test → changelog → ask before commit → ask before push → ask before merge).
+
+Room/channel assignment (letting a user assign real synced channels to rooms, replacing `mockRooms.ts`'s hardcoded `channelIds`) was discovered to be a missing prerequisite, not part of feature 18 as originally scoped — split out into `context/features/19-room-channel-assignment.md`, to be tackled after 18-4 lands.
 
 ## Goals
 

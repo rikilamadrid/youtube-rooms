@@ -48,6 +48,12 @@ describe('VideoFeed', () => {
     expect(handleAddToQueue).toHaveBeenCalledWith('video-1');
   });
 
+  it('omits the "Add to queue" action when onAddToQueue is not provided', () => {
+    render(<VideoFeed items={[makeItem({ id: 'video-1', title: 'Video One' })]} emptyStateTitle="No videos" />);
+
+    expect(screen.queryByRole('button', { name: 'Add Video One to queue' })).not.toBeInTheDocument();
+  });
+
   it('renders the given empty state title and description when there are no items', () => {
     render(
       <VideoFeed

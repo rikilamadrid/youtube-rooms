@@ -30,9 +30,14 @@ export function AppShell() {
         <Link to="/" className="sr-app-shell__brand">
           SubRooms
         </Link>
-        <Link to="/settings" className="sr-app-shell__nav-link">
-          Settings
-        </Link>
+        <nav className="sr-app-shell__nav" aria-label="Primary">
+          <Link to="/channels" className="sr-app-shell__nav-link">
+            Channels
+          </Link>
+          <Link to="/settings" className="sr-app-shell__nav-link">
+            Settings
+          </Link>
+        </nav>
       </header>
       <main className="sr-app-shell__content" ref={mainRef} tabIndex={-1}>
         <Outlet />

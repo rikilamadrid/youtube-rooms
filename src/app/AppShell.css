@@ -12,6 +12,12 @@
   border-bottom: var(--sr-border-width-sm) solid var(--sr-color-border);
 }
 
+.sr-app-shell__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--sr-space-4);
+}
+
 .sr-app-shell__nav-link {
   color: var(--sr-color-text-muted);
   text-decoration: none;

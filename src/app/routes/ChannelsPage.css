@@ -1,0 +1,4 @@
+.sr-channels__error {
+  color: var(--sr-color-warning-strong);
+  margin-bottom: var(--sr-space-4);
+}
