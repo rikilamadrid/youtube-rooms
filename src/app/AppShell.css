@@ -7,8 +7,19 @@
 .sr-app-shell__header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: var(--sr-space-4) var(--sr-space-4);
   border-bottom: var(--sr-border-width-sm) solid var(--sr-color-border);
+}
+
+.sr-app-shell__nav-link {
+  color: var(--sr-color-text-muted);
+  text-decoration: none;
+  font-size: var(--sr-font-size-sm);
+}
+
+.sr-app-shell__nav-link:hover {
+  color: var(--sr-color-text);
 }
 
 .sr-app-shell__brand {
