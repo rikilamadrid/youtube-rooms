@@ -29,10 +29,19 @@
 }
 
 .sr-app-shell__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sr-space-2);
   font-size: var(--sr-font-size-lg);
   font-weight: 700;
   color: var(--sr-color-text);
   text-decoration: none;
+}
+
+.sr-app-shell__logo {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--sr-radius-sm);
 }
 
 .sr-app-shell__brand:hover {
