@@ -28,6 +28,7 @@ export function AppShell() {
     <div className="sr-app-shell">
       <header className="sr-app-shell__header">
         <Link to="/" className="sr-app-shell__brand">
+          <img src="/logo.png" alt="" className="sr-app-shell__logo" />
           SubRooms
         </Link>
         <nav className="sr-app-shell__nav" aria-label="Primary">
