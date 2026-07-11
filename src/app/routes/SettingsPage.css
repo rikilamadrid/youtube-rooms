@@ -1,0 +1,30 @@
+.sr-settings__section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sr-space-3);
+  max-width: 60ch;
+  margin-top: var(--sr-space-6);
+}
+
+.sr-settings__status-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sr-space-3);
+}
+
+.sr-settings__last-synced,
+.sr-settings__description {
+  color: var(--sr-color-text-muted);
+}
+
+.sr-settings__error {
+  color: var(--sr-color-warning-strong);
+}
+
+.sr-settings__actions {
+  display: flex;
+  gap: var(--sr-space-3);
+  margin-top: var(--sr-space-2);
+}
