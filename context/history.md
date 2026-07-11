@@ -4,6 +4,14 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-11 — Feature 21: Channel Assignment UX
+
+- `ChannelAssignmentList` now has a live, client-side title filter (`Filter channels` input, no submit button) with a visually-hidden `role="status"` region announcing the visible result count.
+- Channels are split into "Assigned"/"Unassigned" fieldset groups (or a single "All channels" group when nothing is assigned yet) instead of one flat checkbox list, so assigned channels are visually distinguishable at a glance.
+- Filtering to zero matches shows its own inline empty state ("No channels match '{query}'"), distinct from the existing "no synced channels yet" state, which is unchanged.
+- Checkbox toggle interaction, keyboard behavior, and `RoomDetailPage`'s usage/props contract are unchanged.
+- Verified `test`, `typecheck`, `lint`, and `build` all pass.
+
 ### 2026-07-11 — Feature 20: Room Detail Navigation
 
 - Added a reusable `Tabs` molecule (`src/components/molecules/Tabs/`): a WAI-ARIA tablist widget with roving `tabindex` and Left/Right/Home/End keyboard support, panels rendered by the caller.
