@@ -9,7 +9,8 @@ import {
   fetchChannelUploadsPlaylistIds,
   fetchRecentVideosForChannel,
   fetchSubscribedChannels,
-  fetchVideoDurations,
+  fetchVideoCategories,
+  fetchVideoMetadata,
 } from './youtubeApi';
 
 function jsonResponse(body: unknown, init: { status?: number } = {}) {
@@ -94,14 +95,58 @@ describe('youtubeApi', () => {
     });
   });
 
-  describe('fetchVideoDurations', () => {
-    it('batches ids and maps duration by video id', async () => {
+  describe('fetchVideoMetadata', () => {
+    it('batches ids and maps duration and categoryId by video id', async () => {
+      fetchMock.mockResolvedValueOnce(
+        jsonResponse({
+          items: [
+            { id: 'vid1', contentDetails: { duration: 'PT10M' }, snippet: { categoryId: '20' } },
+          ],
+        }),
+      );
+
+      const metadata = await fetchVideoMetadata(['vid1']);
+      expect(metadata.get('vid1')).toEqual({ duration: 'PT10M', categoryId: '20' });
+    });
+
+    it('omits categoryId when the item has no snippet', async () => {
       fetchMock.mockResolvedValueOnce(
         jsonResponse({ items: [{ id: 'vid1', contentDetails: { duration: 'PT10M' } }] }),
       );
 
-      const durations = await fetchVideoDurations(['vid1']);
-      expect(durations.get('vid1')).toBe('PT10M');
+      const metadata = await fetchVideoMetadata(['vid1']);
+      expect(metadata.get('vid1')).toEqual({ duration: 'PT10M', categoryId: undefined });
+    });
+  });
+
+  describe('fetchVideoCategories', () => {
+    it('batches ids and normalizes categories', async () => {
+      fetchMock.mockResolvedValueOnce(
+        jsonResponse({ items: [{ id: '20', snippet: { title: 'Gaming' } }] }),
+      );
+
+      const categories = await fetchVideoCategories(['20']);
+      expect(categories).toEqual([{ id: '20', title: 'Gaming' }]);
+    });
+
+    it('batches more than 50 category ids into multiple calls', async () => {
+      const categoryIds = Array.from({ length: 60 }, (_, i) => `${i}`);
+      fetchMock
+        .mockResolvedValueOnce(
+          jsonResponse({
+            items: categoryIds.slice(0, 50).map((id) => ({ id, snippet: { title: `Category ${id}` } })),
+          }),
+        )
+        .mockResolvedValueOnce(
+          jsonResponse({
+            items: categoryIds.slice(50).map((id) => ({ id, snippet: { title: `Category ${id}` } })),
+          }),
+        );
+
+      const categories = await fetchVideoCategories(categoryIds);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(categories).toHaveLength(60);
     });
   });
 

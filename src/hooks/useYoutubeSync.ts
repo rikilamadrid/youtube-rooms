@@ -10,11 +10,13 @@ import {
   fetchChannelUploadsPlaylistIds,
   fetchRecentVideosForChannel,
   fetchSubscribedChannels,
+  fetchVideoCategories,
   YoutubeApiError,
   type YoutubeApiErrorCode,
 } from '../services/youtubeApi';
 import type { SubscriptionChannel } from '../types/channel';
 import type { VideoSummary } from '../types/video';
+import type { VideoCategory } from '../types/videoCategory';
 
 export type YoutubeSyncStatus = 'disconnected' | 'connecting' | 'connected' | 'syncing' | 'error';
 
@@ -31,6 +33,8 @@ export interface UseYoutubeSyncResult {
   lastSyncedAt: string | null;
   channels: SubscriptionChannel[];
   videos: VideoSummary[];
+  /** Video categories (e.g. "Gaming", "Music") for every `categoryId` present among synced `videos`. */
+  categories: VideoCategory[];
   /** Requests account access, then runs an initial sync. */
   connect: () => Promise<void>;
   /** Revokes access and clears synced data. */
@@ -61,6 +65,7 @@ export function useYoutubeSync(): UseYoutubeSyncResult {
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [channels, setChannels] = useState<SubscriptionChannel[]>([]);
   const [videos, setVideos] = useState<VideoSummary[]>([]);
+  const [categories, setCategories] = useState<VideoCategory[]>([]);
 
   const sync = useCallback(async () => {
     setStatus('syncing');
@@ -77,9 +82,17 @@ export function useYoutubeSync(): UseYoutubeSyncResult {
           return uploadsPlaylistId ? fetchRecentVideosForChannel(uploadsPlaylistId) : Promise.resolve([]);
         }),
       );
+      const syncedVideos = videosByChannel.flat();
+
+      const distinctCategoryIds = Array.from(
+        new Set(syncedVideos.map((video) => video.categoryId).filter((id): id is string => Boolean(id))),
+      );
+      const syncedCategories =
+        distinctCategoryIds.length > 0 ? await fetchVideoCategories(distinctCategoryIds) : [];
 
       setChannels(subscribedChannels);
-      setVideos(videosByChannel.flat());
+      setVideos(syncedVideos);
+      setCategories(syncedCategories);
       setLastSyncedAt(new Date().toISOString());
       setStatus('connected');
     } catch (err) {
@@ -107,8 +120,9 @@ export function useYoutubeSync(): UseYoutubeSyncResult {
     setError(null);
     setChannels([]);
     setVideos([]);
+    setCategories([]);
     setLastSyncedAt(null);
   }, []);
 
-  return { status, error, lastSyncedAt, channels, videos, connect, disconnect, sync };
+  return { status, error, lastSyncedAt, channels, videos, categories, connect, disconnect, sync };
 }

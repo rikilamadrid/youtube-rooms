@@ -10,7 +10,12 @@
   gap: var(--sr-space-4);
   margin: 0;
   padding: 0;
+  padding-right: var(--sr-space-2);
   list-style: none;
+  max-height: 60vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .sr-video-feed--empty {

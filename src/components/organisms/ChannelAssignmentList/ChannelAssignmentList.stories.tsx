@@ -26,6 +26,46 @@ export const NoneAssigned: Story = {
   },
 };
 
+export const WithCategoryTags: Story = {
+  args: {
+    channels: mockChannels.slice(0, 3),
+    assignedChannelIds: [mockChannels[0].id],
+    onAssign: fn(),
+    onUnassign: fn(),
+    categoryNamesByChannelId: new Map([
+      [mockChannels[0].id, ['Science & Technology', 'Education']],
+      [mockChannels[1].id, ['Gaming']],
+    ]),
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('button', { name: 'Science & Technology' })).toBeInTheDocument();
+    await expect(canvas.getByRole('button', { name: 'Gaming' })).toBeInTheDocument();
+    await expect(canvas.getByRole('checkbox', { name: mockChannels[0].title })).toBeInTheDocument();
+  },
+};
+
+export const FilterByCategory: Story = {
+  args: {
+    channels: mockChannels.slice(0, 3),
+    assignedChannelIds: [],
+    onAssign: fn(),
+    onUnassign: fn(),
+    categoryNamesByChannelId: new Map([
+      [mockChannels[0].id, ['Science & Technology']],
+      [mockChannels[1].id, ['Gaming']],
+    ]),
+  },
+  play: async ({ canvas, userEvent }) => {
+    await expect(canvas.getByRole('checkbox', { name: mockChannels[0].title })).toBeInTheDocument();
+    await expect(canvas.getByRole('checkbox', { name: mockChannels[1].title })).toBeInTheDocument();
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Gaming' }));
+
+    await expect(canvas.getByRole('checkbox', { name: mockChannels[1].title })).toBeInTheDocument();
+    await expect(canvas.queryByRole('checkbox', { name: mockChannels[0].title })).not.toBeInTheDocument();
+  },
+};
+
 export const SomeAssigned: Story = {
   args: {
     channels: mockChannels.slice(0, 4),

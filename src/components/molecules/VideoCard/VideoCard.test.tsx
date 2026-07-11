@@ -159,6 +159,16 @@ describe('VideoCard', () => {
     expect(handleSetActive).toHaveBeenCalledWith('video-1');
   });
 
+  it('disables and relabels the "Add to queue" button when isQueued is true', () => {
+    render(
+      <VideoCard video={video} channelTitle="Weeknight Cooking Club" onAddToQueue={vi.fn()} isQueued />,
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Weeknight Pasta in 20 Minutes is already in the queue' }),
+    ).toBeDisabled();
+  });
+
   it('renders a non-color-only active indicator and a disabled set-active button when isActive is true', () => {
     render(
       <VideoCard

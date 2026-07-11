@@ -1,0 +1,107 @@
+/* ============================================================
+   VideoPlayer
+   16:9 embed with a custom control bar (play/pause, seek,
+   next/previous) overlaid at the bottom, revealed on hover or
+   keyboard focus since the queue-aware next/previous controls
+   have no equivalent in YouTube's own chrome (disabled via
+   `controls: 0`).
+   ============================================================ */
+
+.sr-video-player {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--sr-color-bg);
+  border-radius: var(--sr-radius-lg);
+  overflow: hidden;
+}
+
+.sr-video-player__embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sr-video-player__embed iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.sr-video-player__controls {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sr-space-2);
+  padding: var(--sr-space-2) var(--sr-space-3);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity var(--sr-motion-base),
+    transform var(--sr-motion-base);
+  pointer-events: none;
+}
+
+.sr-video-player:hover .sr-video-player__controls,
+.sr-video-player:focus-within .sr-video-player__controls {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.sr-video-player__control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  padding: 0;
+  border: none;
+  border-radius: var(--sr-radius-sm);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.sr-video-player__control svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.sr-video-player__control:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.sr-video-player__control:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.sr-video-player__control:focus-visible {
+  outline: var(--sr-border-width-md) solid var(--sr-color-accent);
+  outline-offset: 2px;
+}
+
+.sr-video-player__time {
+  flex: 0 0 auto;
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-sm);
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-video-player__seek {
+  flex: 1 1 auto;
+  min-width: 0;
+  accent-color: var(--sr-color-accent);
+}
+
+.sr-video-player__seek:focus-visible {
+  outline: var(--sr-border-width-md) solid var(--sr-color-accent);
+  outline-offset: 2px;
+}

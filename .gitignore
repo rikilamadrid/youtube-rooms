@@ -10,3 +10,4 @@ coverage
 *storybook.log
 context/learning
 scratch
+.agent-native

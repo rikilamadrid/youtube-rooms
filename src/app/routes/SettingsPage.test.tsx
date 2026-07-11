@@ -19,6 +19,7 @@ function stubSync(overrides: Partial<ReturnType<typeof useYoutubeSyncContext>> =
     lastSyncedAt: null,
     channels: [],
     videos: [],
+    categories: [],
     connect,
     disconnect,
     sync,

@@ -1,6 +1,13 @@
 import type { SubscriptionChannel } from '../types/channel';
 import type { VideoSummary } from '../types/video';
-import type { RawChannelItem, RawPlaylistItem, RawSubscriptionItem, RawThumbnails } from './youtubeApiTypes';
+import type { VideoCategory } from '../types/videoCategory';
+import type {
+  RawChannelItem,
+  RawPlaylistItem,
+  RawSubscriptionItem,
+  RawThumbnails,
+  RawVideoCategoryItem,
+} from './youtubeApiTypes';
 
 /** Prefers the highest-resolution thumbnail available; not every size is guaranteed on every item. */
 function pickThumbnailUrl(thumbnails: RawThumbnails | undefined): string | undefined {
@@ -32,11 +39,17 @@ export function extractUploadsPlaylistId(item: RawChannelItem): string | undefin
   return item.contentDetails?.relatedPlaylists.uploads;
 }
 
+export interface VideoMetadata {
+  duration?: string;
+  categoryId?: string;
+}
+
 /**
- * `duration` comes from a separate videos.list call (not available on
- * playlistItems.list) — pass it in once fetched, or omit it if unavailable.
+ * `duration` and `categoryId` come from a separate videos.list call (not
+ * available on playlistItems.list) — pass them in once fetched, or omit
+ * either if unavailable.
  */
-export function normalizeVideoSummary(item: RawPlaylistItem, duration?: string): VideoSummary {
+export function normalizeVideoSummary(item: RawPlaylistItem, metadata?: VideoMetadata): VideoSummary {
   const videoId = item.contentDetails.videoId;
   return {
     id: videoId,
@@ -46,6 +59,12 @@ export function normalizeVideoSummary(item: RawPlaylistItem, duration?: string):
     description: item.snippet.description || undefined,
     thumbnailUrl: pickThumbnailUrl(item.snippet.thumbnails),
     publishedAt: item.contentDetails.videoPublishedAt ?? item.snippet.publishedAt,
-    duration,
+    duration: metadata?.duration,
+    categoryId: metadata?.categoryId,
   };
+}
+
+/** Normalizes a videoCategories.list item into a `VideoCategory` (id → display name). */
+export function normalizeVideoCategory(item: RawVideoCategoryItem): VideoCategory {
+  return { id: item.id, title: item.snippet.title };
 }

@@ -36,3 +36,28 @@
 .sr-room-detail__section-heading {
   margin-bottom: var(--sr-space-4);
 }
+
+.sr-room-detail__player-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: var(--sr-border-width-sm) dashed var(--sr-color-border);
+  border-radius: var(--sr-radius-lg);
+  color: var(--sr-color-text-muted);
+  text-align: center;
+  padding: var(--sr-space-4);
+  margin-bottom: var(--sr-space-4);
+}
+
+.sr-room-detail__panel > .sr-video-player {
+  margin-bottom: var(--sr-space-4);
+}
+
+.sr-room-detail__category-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sr-space-2);
+  margin-bottom: var(--sr-space-4);
+}

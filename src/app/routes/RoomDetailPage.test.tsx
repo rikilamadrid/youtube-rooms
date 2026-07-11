@@ -7,9 +7,26 @@ import { saveRooms } from '../../utils/roomStorage';
 import type { Room } from '../../types/room';
 import type { SubscriptionChannel } from '../../types/channel';
 import type { VideoSummary } from '../../types/video';
+import type { VideoPlayerProps } from '../../components/organisms/VideoPlayer/VideoPlayer';
 import { RoomDetailPage } from './RoomDetailPage';
 
 vi.mock('../../hooks/YoutubeSyncContext');
+vi.mock('../../components/organisms/VideoPlayer/VideoPlayer', () => ({
+  VideoPlayer: ({ youtubeVideoId, onEnded, onPrevious, onNext, hasPrevious, hasNext }: VideoPlayerProps) => (
+    <div data-testid="stub-video-player">
+      <span>Now playing: {youtubeVideoId}</span>
+      <button type="button" onClick={onEnded}>
+        Simulate video ended
+      </button>
+      <button type="button" onClick={onPrevious} disabled={!hasPrevious}>
+        Previous
+      </button>
+      <button type="button" onClick={onNext} disabled={!hasNext}>
+        Next
+      </button>
+    </div>
+  ),
+}));
 
 const mockedUseYoutubeSyncContext = vi.mocked(useYoutubeSyncContext);
 
@@ -20,6 +37,7 @@ function stubSync(overrides: Partial<ReturnType<typeof useYoutubeSyncContext>> =
     lastSyncedAt: null,
     channels: [],
     videos: [],
+    categories: [],
     connect: vi.fn(),
     disconnect: vi.fn(),
     sync: vi.fn(),
@@ -181,7 +199,68 @@ describe('RoomDetailPage', () => {
     expect(screen.getAllByText('Fireship').length).toBeGreaterThan(0);
   });
 
-  it('renders an empty queue state', async () => {
+  it('shows no category filter chips when no video has a categoryId', () => {
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    stubSync({ channels: [makeChannel()], videos: [makeVideo()] });
+
+    renderAtRoom(room.id);
+
+    expect(screen.queryByRole('group', { name: 'Filter by category' })).not.toBeInTheDocument();
+  });
+
+  it('filters the video feed by category and back to All', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    const gamingVideo = makeVideo({ id: 'video-gaming', title: 'Speedrun Tips', categoryId: '20' });
+    const musicVideo = makeVideo({ id: 'video-music', title: 'Lo-fi Beats', categoryId: '10' });
+    stubSync({
+      channels: [makeChannel()],
+      videos: [gamingVideo, musicVideo],
+      categories: [
+        { id: '20', title: 'Gaming' },
+        { id: '10', title: 'Music' },
+      ],
+    });
+
+    renderAtRoom(room.id);
+
+    const filterGroup = screen.getByRole('group', { name: 'Filter by category' });
+    expect(within(filterGroup).getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'true');
+
+    await user.click(within(filterGroup).getByRole('button', { name: 'Gaming' }));
+
+    const feed = screen.getByRole('list', { name: 'Latest videos' });
+    expect(within(feed).getByText('Speedrun Tips')).toBeInTheDocument();
+    expect(within(feed).queryByText('Lo-fi Beats')).not.toBeInTheDocument();
+    expect(within(filterGroup).getByRole('button', { name: 'Gaming' })).toHaveAttribute('aria-pressed', 'true');
+
+    await user.click(within(filterGroup).getByRole('button', { name: 'All' }));
+    expect(within(feed).getByText('Lo-fi Beats')).toBeInTheDocument();
+  });
+
+  it('only shows chips for categories present among the room’s videos, not every synced category', () => {
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    const gamingVideo = makeVideo({ id: 'video-gaming', title: 'Speedrun Tips', categoryId: '20' });
+    stubSync({
+      channels: [makeChannel()],
+      videos: [gamingVideo],
+      categories: [
+        { id: '20', title: 'Gaming' },
+        { id: '10', title: 'Music' },
+      ],
+    });
+
+    renderAtRoom(room.id);
+
+    const filterGroup = screen.getByRole('group', { name: 'Filter by category' });
+    expect(within(filterGroup).getByRole('button', { name: 'Gaming' })).toBeInTheDocument();
+    expect(within(filterGroup).queryByRole('button', { name: 'Music' })).not.toBeInTheDocument();
+  });
+
+  it('renders an empty queue state with no player', async () => {
     const user = userEvent.setup();
     const room = makeRoom();
     saveRooms([room]);
@@ -191,6 +270,21 @@ describe('RoomDetailPage', () => {
     await user.click(screen.getByRole('tab', { name: 'Queue' }));
 
     expect(screen.getByRole('heading', { name: 'Your queue is empty' })).toBeInTheDocument();
+    expect(screen.queryByTestId('stub-video-player')).not.toBeInTheDocument();
+  });
+
+  it('disables "Add to queue" once a video is queued', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    const video = makeVideo();
+    stubSync({ channels: [makeChannel()], videos: [video] });
+
+    renderAtRoom(room.id);
+    const feed = screen.getByRole('list', { name: 'Latest videos' });
+    await user.click(within(feed).getByRole('button', { name: `Add ${video.title} to queue` }));
+
+    expect(within(feed).getByRole('button', { name: `${video.title} is already in the queue` })).toBeDisabled();
   });
 
   it('adds, removes, and sets an active video in the queue end to end', async () => {
@@ -220,6 +314,78 @@ describe('RoomDetailPage', () => {
     expect(within(queuePanel).queryByText(video.title)).not.toBeInTheDocument();
   });
 
+  it('shows the player inline in the Queue tab once a video is selected, with no separate watch page', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    const video = makeVideo();
+    stubSync({ channels: [makeChannel()], videos: [video] });
+
+    renderAtRoom(room.id);
+    const feed = screen.getByRole('list', { name: 'Latest videos' });
+    await user.click(within(feed).getByRole('button', { name: `Add ${video.title} to queue` }));
+    await user.click(screen.getByRole('tab', { name: 'Queue' }));
+
+    expect(screen.queryByRole('button', { name: 'Watch' })).not.toBeInTheDocument();
+    expect(screen.getByText('Select a video from the queue below to start watching.')).toBeInTheDocument();
+
+    const queuePanel = screen.getByRole('list', { name: 'Your queue' });
+    await user.click(within(queuePanel).getByRole('button', { name: `Set ${video.title} as active` }));
+
+    expect(screen.getByText(`Now playing: ${video.youtubeVideoId}`)).toBeInTheDocument();
+  });
+
+  it('advances to the next queued video when the player reports it ended, and stops cleanly at the end', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    const first = makeVideo({ id: 'video-1', youtubeVideoId: 'yt-1', title: 'First video' });
+    const second = makeVideo({ id: 'video-2', youtubeVideoId: 'yt-2', title: 'Second video' });
+    stubSync({ channels: [makeChannel()], videos: [first, second] });
+
+    renderAtRoom(room.id);
+    const feed = screen.getByRole('list', { name: 'Latest videos' });
+    await user.click(within(feed).getByRole('button', { name: `Add ${first.title} to queue` }));
+    await user.click(within(feed).getByRole('button', { name: `Add ${second.title} to queue` }));
+    await user.click(screen.getByRole('tab', { name: 'Queue' }));
+
+    const queuePanel = screen.getByRole('list', { name: 'Your queue' });
+    await user.click(within(queuePanel).getByRole('button', { name: `Set ${first.title} as active` }));
+    expect(screen.getByText(`Now playing: ${first.youtubeVideoId}`)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Simulate video ended' }));
+    expect(screen.getByText(`Now playing: ${second.youtubeVideoId}`)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Simulate video ended' }));
+    expect(screen.getByText('Select a video from the queue below to start watching.')).toBeInTheDocument();
+  });
+
+  it('navigates the queue via the player’s next/previous controls', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    const first = makeVideo({ id: 'video-1', youtubeVideoId: 'yt-1', title: 'First video' });
+    const second = makeVideo({ id: 'video-2', youtubeVideoId: 'yt-2', title: 'Second video' });
+    stubSync({ channels: [makeChannel()], videos: [first, second] });
+
+    renderAtRoom(room.id);
+    const feed = screen.getByRole('list', { name: 'Latest videos' });
+    await user.click(within(feed).getByRole('button', { name: `Add ${first.title} to queue` }));
+    await user.click(within(feed).getByRole('button', { name: `Add ${second.title} to queue` }));
+    await user.click(screen.getByRole('tab', { name: 'Queue' }));
+
+    const queuePanel = screen.getByRole('list', { name: 'Your queue' });
+    await user.click(within(queuePanel).getByRole('button', { name: `Set ${first.title} as active` }));
+
+    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    expect(screen.getByText(`Now playing: ${second.youtubeVideoId}`)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Previous' }));
+    expect(screen.getByText(`Now playing: ${first.youtubeVideoId}`)).toBeInTheDocument();
+  });
+
   it('assigns and unassigns a synced channel', async () => {
     const user = userEvent.setup();
     const room = makeRoom({ channelIds: [] });
@@ -238,6 +404,24 @@ describe('RoomDetailPage', () => {
 
     await user.click(screen.getByRole('checkbox', { name: 'Fireship' }));
     expect(screen.getByRole('checkbox', { name: 'Fireship' })).not.toBeChecked();
+  });
+
+  it('shows category tags under a channel derived from its synced videos', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom({ channelIds: [] });
+    saveRooms([room]);
+    const video = makeVideo({ channelId: 'channel-fireship', categoryId: '28' });
+    stubSync({
+      channels: [makeChannel()],
+      videos: [video],
+      categories: [{ id: '28', title: 'Science & Technology' }],
+    });
+
+    renderAtRoom(room.id);
+    await user.click(screen.getByRole('tab', { name: 'Channels' }));
+
+    expect(screen.getByRole('button', { name: 'Science & Technology' })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Fireship' })).toBeInTheDocument();
   });
 
   it('shows a connect prompt in the channel list when nothing is synced yet', async () => {

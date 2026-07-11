@@ -18,6 +18,7 @@ vi.mock('../services/youtubeAuth', async () => {
 const fetchSubscribedChannels = vi.fn();
 const fetchChannelUploadsPlaylistIds = vi.fn();
 const fetchRecentVideosForChannel = vi.fn();
+const fetchVideoCategories = vi.fn();
 
 vi.mock('../services/youtubeApi', async () => {
   const actual = await vi.importActual<typeof import('../services/youtubeApi')>('../services/youtubeApi');
@@ -26,6 +27,7 @@ vi.mock('../services/youtubeApi', async () => {
     fetchSubscribedChannels: (...args: unknown[]) => fetchSubscribedChannels(...args),
     fetchChannelUploadsPlaylistIds: (...args: unknown[]) => fetchChannelUploadsPlaylistIds(...args),
     fetchRecentVideosForChannel: (...args: unknown[]) => fetchRecentVideosForChannel(...args),
+    fetchVideoCategories: (...args: unknown[]) => fetchVideoCategories(...args),
   };
 });
 
@@ -54,6 +56,7 @@ describe('useYoutubeSync', () => {
     fetchSubscribedChannels.mockResolvedValue([channelOne]);
     fetchChannelUploadsPlaylistIds.mockResolvedValue(new Map([['UC1', 'UU1']]));
     fetchRecentVideosForChannel.mockResolvedValue([videoOne]);
+    fetchVideoCategories.mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -84,6 +87,32 @@ describe('useYoutubeSync', () => {
     expect(result.current.videos).toEqual([videoOne]);
     expect(result.current.lastSyncedAt).not.toBeNull();
     expect(result.current.error).toBeNull();
+    expect(fetchVideoCategories).not.toHaveBeenCalled();
+    expect(result.current.categories).toEqual([]);
+  });
+
+  it('resolves category names for every distinct categoryId among synced videos', async () => {
+    fetchRecentVideosForChannel.mockResolvedValue([
+      { ...videoOne, id: 'video-1', categoryId: '20' },
+      { ...videoOne, id: 'video-2', categoryId: '10' },
+      { ...videoOne, id: 'video-3', categoryId: '20' },
+    ]);
+    fetchVideoCategories.mockResolvedValue([
+      { id: '20', title: 'Gaming' },
+      { id: '10', title: 'Music' },
+    ]);
+    isYoutubeConnected.mockReturnValue(true);
+    const { result } = renderHook(() => useYoutubeSync());
+
+    await act(async () => {
+      await result.current.sync();
+    });
+
+    expect(fetchVideoCategories).toHaveBeenCalledWith(['20', '10']);
+    expect(result.current.categories).toEqual([
+      { id: '20', title: 'Gaming' },
+      { id: '10', title: 'Music' },
+    ]);
   });
 
   it('surfaces an auth error and does not attempt a sync when connect fails', async () => {
@@ -152,6 +181,7 @@ describe('useYoutubeSync', () => {
     expect(result.current.status).toBe('disconnected');
     expect(result.current.channels).toEqual([]);
     expect(result.current.videos).toEqual([]);
+    expect(result.current.categories).toEqual([]);
     expect(result.current.lastSyncedAt).toBeNull();
   });
 });

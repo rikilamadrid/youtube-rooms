@@ -19,6 +19,8 @@ export type VideoCardProps = {
   onSetActive?: (videoId: string) => void;
   /** Whether this video is the queue's active video. Only meaningful alongside `onSetActive`. */
   isActive?: boolean;
+  /** Whether this video is already in the queue. Disables the "Add to queue" button so it's obvious at a glance. Only meaningful alongside `onAddToQueue`. */
+  isQueued?: boolean;
 };
 
 function PlayIcon() {
@@ -60,6 +62,7 @@ export function VideoCard({
   onRemoveFromQueue,
   onSetActive,
   isActive = false,
+  isQueued = false,
 }: VideoCardProps) {
   const publishedDate = formatPublishedDate(video.publishedAt);
   const duration = formatDuration(video.duration);
@@ -108,9 +111,10 @@ export function VideoCard({
               variant="secondary"
               size="sm"
               onClick={handleAddToQueue}
-              aria-label={`Add ${video.title} to queue`}
+              disabled={isQueued}
+              aria-label={isQueued ? `${video.title} is already in the queue` : `Add ${video.title} to queue`}
             >
-              Add to queue
+              {isQueued ? 'Added to queue' : 'Add to queue'}
             </Button>
           ) : null}
           {onSetActive ? (

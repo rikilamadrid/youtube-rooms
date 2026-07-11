@@ -80,6 +80,18 @@ export const LongTitle: Story = {
   },
 };
 
+export const AlreadyQueued: Story = {
+  args: {
+    video: { ...baseVideo, id: 'video-9' },
+    isQueued: true,
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('button', { name: 'Weeknight Pasta in 20 Minutes is already in the queue' }),
+    ).toBeDisabled();
+  },
+};
+
 export const QueueRow: Story = {
   args: {
     video: { ...baseVideo, id: 'video-7' },
