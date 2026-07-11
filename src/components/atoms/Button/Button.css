@@ -38,7 +38,7 @@
 /* Sizes */
 
 .sr-button--sm {
-  --sr-button-size: 2.25rem;
+  --sr-button-size: 2.75rem;
   padding-inline: var(--sr-space-3);
   font-size: var(--sr-font-size-sm);
 }
