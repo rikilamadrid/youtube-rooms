@@ -60,6 +60,16 @@ export const NoChannelsAssigned: Story = {
   },
 };
 
+export const ReadOnly: Story = {
+  args: {
+    items: [makeItem(1), makeItem(2)],
+    onAddToQueue: undefined,
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.queryByRole('button', { name: /add .* to queue/i })).not.toBeInTheDocument();
+  },
+};
+
 export const ChannelsWithNoVideos: Story = {
   args: {
     items: [],

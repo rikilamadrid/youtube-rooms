@@ -1,6 +1,6 @@
 import { Badge, type BadgeTone } from '../../components/atoms/Badge/Badge';
 import { Button } from '../../components/atoms/Button/Button';
-import { useYoutubeSync } from '../../hooks/useYoutubeSync';
+import { useYoutubeSyncContext } from '../../hooks/YoutubeSyncContext';
 import './SettingsPage.css';
 
 const STATUS_COPY: Record<string, { label: string; tone: BadgeTone }> = {
@@ -14,10 +14,10 @@ const STATUS_COPY: Record<string, { label: string; tone: BadgeTone }> = {
 /**
  * Settings route (`/settings`): connect/disconnect the YouTube account and
  * trigger a manual sync, surfacing connection/sync status and any
- * auth/quota/network errors via `useYoutubeSync`.
+ * auth/quota/network errors via the shared `YoutubeSyncProvider` context.
  */
 export function SettingsPage() {
-  const { status, error, lastSyncedAt, channels, videos, connect, disconnect, sync } = useYoutubeSync();
+  const { status, error, lastSyncedAt, channels, videos, connect, disconnect, sync } = useYoutubeSyncContext();
 
   const isBusy = status === 'connecting' || status === 'syncing';
   const isConnected = status === 'connected' || status === 'syncing';

@@ -6,8 +6,8 @@ import './VideoFeed.css';
 export type VideoFeedProps = {
   /** Videos to render, one `VideoCard` each, already resolved and sorted by the caller. */
   items: RoomVideoFeedItem[];
-  /** Called with a video's id when its "Add to queue" action is activated. */
-  onAddToQueue: (videoId: string) => void;
+  /** Called with a video's id when its "Add to queue" action is activated. Omit to render a read-only feed with no queue action. */
+  onAddToQueue?: (videoId: string) => void;
   /** Empty-state headline; callers supply copy specific to why the feed is empty. */
   emptyStateTitle: string;
   /** Empty-state supporting copy. */
