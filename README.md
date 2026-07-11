@@ -46,20 +46,20 @@ No YouTube API integration in the first milestone. Start with typed mock data so
 
 ## Deployment & CI/CD
 
-**Production:** _pending Vercel connection — add the live URL here once the project is linked (see setup steps below)._
+**Production:** [https://youtube-rooms.vercel.app](https://youtube-rooms.vercel.app)
 
 **How CI/CD works:**
 
 - GitHub Actions (`.github/workflows/ci.yml`) is the source of truth for correctness. Every push to `main` and every pull request runs `typecheck`, `lint`, `test`, `build`, and `build-storybook`.
 - Vercel deployments are additive, not a gate — they don't replace CI, they give a visual preview alongside it.
-- Once the Vercel project is connected, every pull request gets an automatic preview deployment at a unique URL (posted as a PR check/comment by the Vercel GitHub integration), and every merge to `main` redeploys production automatically. No manual redeploy step is needed either way.
+- The Vercel project is connected: every pull request gets an automatic preview deployment at a unique URL (posted as a PR check/comment by the Vercel GitHub integration), and every merge to `main` redeploys production automatically. No manual redeploy step is needed either way.
 
-**Connecting Vercel (one-time, manual):**
+**Connecting Vercel (already done — kept here for reference):**
 
 1. In the [Vercel dashboard](https://vercel.com/new), import this GitHub repository.
 2. Framework preset: Vite (auto-detected). Build command: `npm run build`. Output directory: `dist` (Vercel's defaults — no `vercel.json` override needed).
 3. No environment variables are required yet (see below).
-4. Enable the Vercel GitHub integration's PR comments so preview links show up on pull requests automatically.
+4. The Vercel GitHub integration's PR comments are enabled, so preview links show up on pull requests automatically.
 5. Storybook is not deployed separately — it's covered by CI's `build-storybook` check. Revisit a dedicated Storybook deployment (e.g. a second Vercel project pointed at `storybook-static`) if a shareable Storybook link becomes useful later.
 
 **Branch protection (recommended, configured manually in GitHub):**
