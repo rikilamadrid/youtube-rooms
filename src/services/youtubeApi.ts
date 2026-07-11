@@ -1,13 +1,21 @@
 import type { SubscriptionChannel } from '../types/channel';
 import type { VideoSummary } from '../types/video';
+import type { VideoCategory } from '../types/videoCategory';
 import { getYoutubeAccessToken } from './youtubeAuth';
-import { extractUploadsPlaylistId, normalizeSubscriptionChannel, normalizeVideoSummary } from './normalizeYoutubeData';
+import {
+  extractUploadsPlaylistId,
+  normalizeSubscriptionChannel,
+  normalizeVideoCategory,
+  normalizeVideoSummary,
+  type VideoMetadata,
+} from './normalizeYoutubeData';
 import type {
   RawApiErrorResponse,
   RawChannelItem,
   RawListResponse,
   RawPlaylistItem,
   RawSubscriptionItem,
+  RawVideoCategoryItem,
   RawVideoItem,
 } from './youtubeApiTypes';
 
@@ -124,27 +132,50 @@ export async function fetchChannelUploadsPlaylistIds(channelIds: string[]): Prom
   return uploadsPlaylistIdsByChannel;
 }
 
-/** Batched videos.list call (up to 50 ids/call) to fetch duration — unavailable from playlistItems.list. */
-export async function fetchVideoDurations(videoIds: string[]): Promise<Map<string, string>> {
-  const durationsByVideoId = new Map<string, string>();
+/**
+ * Batched videos.list call (up to 50 ids/call) to fetch duration and
+ * categoryId — neither is available from playlistItems.list. `categoryId`
+ * rides along on the same call (`part=contentDetails,snippet`) at no extra
+ * request cost; resolve it to a display name via `fetchVideoCategories`.
+ */
+export async function fetchVideoMetadata(videoIds: string[]): Promise<Map<string, VideoMetadata>> {
+  const metadataByVideoId = new Map<string, VideoMetadata>();
 
   for (const batch of chunk(videoIds, MAX_BATCH_IDS)) {
     const response = await youtubeApiFetch<RawListResponse<RawVideoItem>>('/videos', {
-      part: 'contentDetails',
+      part: 'contentDetails,snippet',
       id: batch.join(','),
     });
     for (const item of response.items) {
-      durationsByVideoId.set(item.id, item.contentDetails.duration);
+      metadataByVideoId.set(item.id, {
+        duration: item.contentDetails.duration,
+        categoryId: item.snippet?.categoryId,
+      });
     }
   }
 
-  return durationsByVideoId;
+  return metadataByVideoId;
+}
+
+/** Batched videoCategories.list call (up to 50 ids/call) to resolve category ids to display names. */
+export async function fetchVideoCategories(categoryIds: string[]): Promise<VideoCategory[]> {
+  const categories: VideoCategory[] = [];
+
+  for (const batch of chunk(categoryIds, MAX_BATCH_IDS)) {
+    const response = await youtubeApiFetch<RawListResponse<RawVideoCategoryItem>>('/videoCategories', {
+      part: 'snippet',
+      id: batch.join(','),
+    });
+    categories.push(...response.items.map(normalizeVideoCategory));
+  }
+
+  return categories;
 }
 
 /**
  * Fetches the most recent uploads for a single channel: playlistItems.list
- * against its uploads playlist, then videos.list for durations, normalized
- * into VideoSummary sorted by recency.
+ * against its uploads playlist, then videos.list for duration/categoryId,
+ * normalized into VideoSummary sorted by recency.
  */
 export async function fetchRecentVideosForChannel(
   uploadsPlaylistId: string,
@@ -161,9 +192,9 @@ export async function fetchRecentVideosForChannel(
   }
 
   const videoIds = response.items.map((item) => item.contentDetails.videoId);
-  const durationsByVideoId = await fetchVideoDurations(videoIds);
+  const metadataByVideoId = await fetchVideoMetadata(videoIds);
 
   return response.items
-    .map((item) => normalizeVideoSummary(item, durationsByVideoId.get(item.contentDetails.videoId)))
+    .map((item) => normalizeVideoSummary(item, metadataByVideoId.get(item.contentDetails.videoId)))
     .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 }

@@ -1,19 +1,22 @@
 /* ============================================================
    VideoCard
    Composes Card + Badge + Button to represent a VideoSummary.
-   Mobile-first: thumbnail stacks above the body in a single
-   column; grid/queue layouts are applied by parent containers.
+   Compact horizontal row: a small fixed-width thumbnail beside
+   the title/meta/actions, so lists of many videos stay scannable
+   instead of each card eating a full screen's height.
    ============================================================ */
 
 .sr-video-card {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: stretch;
   overflow: hidden;
 }
 
 .sr-video-card__thumbnail {
   display: block;
-  width: 100%;
+  flex: 0 0 auto;
+  width: 7rem;
   aspect-ratio: 16 / 9;
   background-color: var(--sr-color-surface);
   overflow: hidden;
@@ -34,31 +37,39 @@
 }
 
 .sr-video-card__thumbnail--fallback svg {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .sr-video-card__body {
   display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--sr-space-2);
-  padding: var(--sr-space-4);
+  justify-content: center;
+  gap: var(--sr-space-1);
+  padding: var(--sr-space-2) var(--sr-space-3);
 }
 
 .sr-video-card__title {
+  width: 100%;
   font-family: var(--sr-font-family-base);
-  font-size: var(--sr-font-size-md);
+  font-size: var(--sr-font-size-sm);
   font-weight: 600;
   color: var(--sr-color-text);
   overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .sr-video-card__meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--sr-space-2);
+  gap: var(--sr-space-1);
   font-family: var(--sr-font-family-base);
   font-size: var(--sr-font-size-sm);
   color: var(--sr-color-text-muted);
@@ -72,5 +83,4 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--sr-space-2);
-  margin-top: var(--sr-space-1);
 }

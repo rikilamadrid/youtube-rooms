@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { extractUploadsPlaylistId, normalizeSubscriptionChannel, normalizeVideoSummary } from './normalizeYoutubeData';
+import {
+  extractUploadsPlaylistId,
+  normalizeSubscriptionChannel,
+  normalizeVideoCategory,
+  normalizeVideoSummary,
+} from './normalizeYoutubeData';
 import type { RawChannelItem, RawPlaylistItem, RawSubscriptionItem } from './youtubeApiTypes';
 
 describe('normalizeSubscriptionChannel', () => {
@@ -87,7 +92,7 @@ describe('normalizeVideoSummary', () => {
       },
     };
 
-    expect(normalizeVideoSummary(raw, 'PT12M15S')).toEqual({
+    expect(normalizeVideoSummary(raw, { duration: 'PT12M15S', categoryId: '28' })).toEqual({
       id: 'abc123',
       youtubeVideoId: 'abc123',
       channelId: 'UCsBjURrPoezykLs9EqgamOA',
@@ -96,6 +101,7 @@ describe('normalizeVideoSummary', () => {
       thumbnailUrl: 'https://example.com/video-high.jpg',
       publishedAt: '2026-01-02T12:00:00Z',
       duration: 'PT12M15S',
+      categoryId: '28',
     });
   });
 
@@ -115,5 +121,15 @@ describe('normalizeVideoSummary', () => {
     expect(result.channelId).toBe('UC789');
     expect(result.publishedAt).toBe('2025-06-01T00:00:00Z');
     expect(result.duration).toBeUndefined();
+    expect(result.categoryId).toBeUndefined();
+  });
+});
+
+describe('normalizeVideoCategory', () => {
+  it('normalizes a videoCategories.list item into a VideoCategory', () => {
+    expect(normalizeVideoCategory({ id: '20', snippet: { title: 'Gaming' } })).toEqual({
+      id: '20',
+      title: 'Gaming',
+    });
   });
 });

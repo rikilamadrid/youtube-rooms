@@ -52,6 +52,16 @@ export interface RawVideoItem {
   contentDetails: {
     duration: string;
   };
+  snippet?: {
+    categoryId?: string;
+  };
+}
+
+export interface RawVideoCategoryItem {
+  id: string;
+  snippet: {
+    title: string;
+  };
 }
 
 export interface RawApiErrorResponse {

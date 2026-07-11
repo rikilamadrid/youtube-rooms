@@ -6,17 +6,22 @@ import { RoomFormDialog } from '../../components/molecules/RoomFormDialog/RoomFo
 import { Tabs, type TabItem } from '../../components/molecules/Tabs/Tabs';
 import { ChannelAssignmentList } from '../../components/organisms/ChannelAssignmentList/ChannelAssignmentList';
 import { VideoFeed } from '../../components/organisms/VideoFeed/VideoFeed';
+import { VideoPlayer } from '../../components/organisms/VideoPlayer/VideoPlayer';
 import { WatchQueuePanel } from '../../components/organisms/WatchQueuePanel/WatchQueuePanel';
 import { useRooms } from '../../hooks/useRooms';
 import { useYoutubeSyncContext } from '../../hooks/YoutubeSyncContext';
 import type { WatchQueue } from '../../types/queue';
+import {
+  addToQueue,
+  emptyQueueForRoom,
+  nextInQueue,
+  prevInQueue,
+  removeFromQueue,
+  resolveQueueItems,
+  setActiveVideo,
+} from '../../utils/watchQueue';
 import { resolveRoomVideoFeed } from '../../utils/resolveRoomVideoFeed';
-import { addToQueue, removeFromQueue, setActiveVideo } from '../../utils/watchQueue';
 import './RoomDetailPage.css';
-
-function emptyQueueForRoom(roomId: string): WatchQueue {
-  return { id: `queue-${roomId}`, roomId, videoIds: [] };
-}
 
 type SectionId = 'channels' | 'videos' | 'queue';
 
@@ -36,24 +41,35 @@ function isSectionId(value: string | null): value is SectionId {
  * Room detail route (`/rooms/:roomId`): the room's name/description/channel
  * count, controls to edit or delete the room and assign synced channels to
  * it, its latest videos across assigned channels (sourced from
- * `useYoutubeSyncContext()`), and the room's watch queue. Queue state is
- * local to this page and always starts empty.
+ * `useYoutubeSyncContext()`), and the room's watch queue with an embedded
+ * player right in the Queue tab — no separate page to jump to. Queue state
+ * is local to this page and always starts empty.
  */
 export function RoomDetailPage() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const { rooms, updateRoom, deleteRoom, assignChannel, unassignChannel } = useRooms();
-  const { channels, videos } = useYoutubeSyncContext();
+  const { channels, videos, categories } = useYoutubeSyncContext();
   const room = rooms.find((candidate) => candidate.id === roomId);
   const [queue, setQueue] = useState<WatchQueue | null>(() =>
     room ? emptyQueueForRoom(room.id) : null,
   );
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [trackedRoomId, setTrackedRoomId] = useState(roomId);
   const [searchParams, setSearchParams] = useSearchParams();
   const rawSection = searchParams.get('section');
   const activeSection: SectionId = isSectionId(rawSection) ? rawSection : DEFAULT_SECTION;
   const panelRef = useRef<HTMLDivElement>(null);
   const previousSection = useRef<SectionId | null>(null);
+
+  // Clear the category filter when navigating to a different room, following
+  // React's recommended "adjust state during render" pattern rather than an
+  // effect, since it's purely derived from the roomId param.
+  if (roomId !== trackedRoomId) {
+    setTrackedRoomId(roomId);
+    setCategoryFilter(null);
+  }
 
   useEffect(() => {
     if (previousSection.current !== null && previousSection.current !== activeSection) {
@@ -85,16 +101,33 @@ export function RoomDetailPage() {
 
   const channelCount = room.channelIds.length;
   const items = resolveRoomVideoFeed(room, channels, videos);
-  const videoById = new Map(videos.map((video) => [video.id, video]));
-  const channelTitleById = new Map(channels.map((channel) => [channel.id, channel.title]));
-
-  const queueItems = queue.videoIds
-    .map((videoId) => videoById.get(videoId))
-    .filter((video): video is NonNullable<typeof video> => video !== undefined)
-    .map((video) => ({
-      video,
-      channelTitle: channelTitleById.get(video.channelId) ?? 'Unknown channel',
-    }));
+  const categoryNameById = new Map(categories.map((category) => [category.id, category.title]));
+  const presentCategoryIds = Array.from(
+    new Set(
+      items
+        .map((item) => item.video.categoryId)
+        .filter((categoryId): categoryId is string => Boolean(categoryId)),
+    ),
+  );
+  const filteredItems = categoryFilter
+    ? items.filter((item) => item.video.categoryId === categoryFilter)
+    : items;
+  const categoryNameSetByChannelId = new Map<string, Set<string>>();
+  for (const video of videos) {
+    const categoryName = video.categoryId ? categoryNameById.get(video.categoryId) : undefined;
+    if (!categoryName) {
+      continue;
+    }
+    const names = categoryNameSetByChannelId.get(video.channelId) ?? new Set<string>();
+    names.add(categoryName);
+    categoryNameSetByChannelId.set(video.channelId, names);
+  }
+  const categoryNamesByChannelId = new Map(
+    Array.from(categoryNameSetByChannelId, ([channelId, names]) => [channelId, Array.from(names)]),
+  );
+  const queueItems = resolveQueueItems(queue, channels, videos);
+  const queuedVideoIds = new Set(queue.videoIds);
+  const activeItem = queueItems.find((item) => item.video.id === queue.activeVideoId);
 
   function handleAddToQueue(videoId: string) {
     setQueue((current) => (current ? addToQueue(current, videoId) : current));
@@ -106,6 +139,27 @@ export function RoomDetailPage() {
 
   function handleSetActive(videoId: string) {
     setQueue((current) => (current ? setActiveVideo(current, videoId) : current));
+  }
+
+  function handleEnded() {
+    if (!activeItem) {
+      return;
+    }
+    setQueue((current) => (current ? setActiveVideo(current, nextInQueue(current, activeItem.video.id)) : current));
+  }
+
+  function handlePrevious() {
+    if (!activeItem) {
+      return;
+    }
+    setQueue((current) => (current ? setActiveVideo(current, prevInQueue(current, activeItem.video.id)) : current));
+  }
+
+  function handleNext() {
+    if (!activeItem) {
+      return;
+    }
+    setQueue((current) => (current ? setActiveVideo(current, nextInQueue(current, activeItem.video.id)) : current));
   }
 
   function handleEditRoom(input: { name: string; description?: string }) {
@@ -169,6 +223,7 @@ export function RoomDetailPage() {
             onAssign={(channelId) => assignChannel(room.id, channelId)}
             onUnassign={(channelId) => unassignChannel(room.id, channelId)}
             onConnectAccount={() => navigate('/settings')}
+            categoryNamesByChannelId={categoryNamesByChannelId}
           />
         </div>
       ) : null}
@@ -182,9 +237,33 @@ export function RoomDetailPage() {
           className="sr-room-detail__panel"
         >
           <h2 className="sr-room-detail__section-heading">Latest videos</h2>
+          {presentCategoryIds.length > 0 ? (
+            <div className="sr-room-detail__category-filters" role="group" aria-label="Filter by category">
+              <Button
+                variant={categoryFilter === null ? 'primary' : 'secondary'}
+                size="sm"
+                onClick={() => setCategoryFilter(null)}
+                aria-pressed={categoryFilter === null}
+              >
+                All
+              </Button>
+              {presentCategoryIds.map((categoryId) => (
+                <Button
+                  key={categoryId}
+                  variant={categoryFilter === categoryId ? 'primary' : 'secondary'}
+                  size="sm"
+                  onClick={() => setCategoryFilter(categoryId)}
+                  aria-pressed={categoryFilter === categoryId}
+                >
+                  {categoryNameById.get(categoryId) ?? 'Unknown'}
+                </Button>
+              ))}
+            </div>
+          ) : null}
           <VideoFeed
-            items={items}
+            items={filteredItems}
             onAddToQueue={handleAddToQueue}
+            queuedVideoIds={queuedVideoIds}
             emptyStateTitle={emptyStateTitle}
             emptyStateDescription={emptyStateDescription}
           />
@@ -200,6 +279,20 @@ export function RoomDetailPage() {
           className="sr-room-detail__panel"
         >
           <h2 className="sr-room-detail__section-heading">Your queue</h2>
+          {activeItem ? (
+            <VideoPlayer
+              youtubeVideoId={activeItem.video.youtubeVideoId}
+              onEnded={handleEnded}
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+              hasPrevious={prevInQueue(queue, activeItem.video.id) !== undefined}
+              hasNext={nextInQueue(queue, activeItem.video.id) !== undefined}
+            />
+          ) : queueItems.length > 0 ? (
+            <div className="sr-room-detail__player-placeholder">
+              <p>Select a video from the queue below to start watching.</p>
+            </div>
+          ) : null}
           <WatchQueuePanel
             queue={queue}
             items={queueItems}

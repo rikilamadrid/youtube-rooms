@@ -48,6 +48,20 @@ describe('VideoFeed', () => {
     expect(handleAddToQueue).toHaveBeenCalledWith('video-1');
   });
 
+  it('disables "Add to queue" for videos already in queuedVideoIds', () => {
+    render(
+      <VideoFeed
+        items={[makeItem({ id: 'video-1', title: 'Video One' }), makeItem({ id: 'video-2', title: 'Video Two' })]}
+        onAddToQueue={vi.fn()}
+        queuedVideoIds={new Set(['video-1'])}
+        emptyStateTitle="No videos"
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Video One is already in the queue' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Add Video Two to queue' })).toBeEnabled();
+  });
+
   it('omits the "Add to queue" action when onAddToQueue is not provided', () => {
     render(<VideoFeed items={[makeItem({ id: 'video-1', title: 'Video One' })]} emptyStateTitle="No videos" />);
 

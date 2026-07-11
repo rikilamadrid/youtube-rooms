@@ -176,6 +176,222 @@ describe('ChannelAssignmentList', () => {
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 
+  it('renders a decorative thumbnail image when the channel has one', () => {
+    const { container } = render(
+      <ChannelAssignmentList
+        channels={[makeChannel({ thumbnailUrl: 'https://example.com/avatar.jpg' })]}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+      />,
+    );
+
+    expect(container.querySelector('img')).toHaveAttribute('alt', '');
+    expect(container.querySelector('img')).toHaveAttribute('src', 'https://example.com/avatar.jpg');
+  });
+
+  it('renders a decorative fallback icon when the channel has no thumbnail', () => {
+    const { container } = render(
+      <ChannelAssignmentList
+        channels={[makeChannel({ thumbnailUrl: undefined })]}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+      />,
+    );
+
+    expect(container.querySelector('img')).not.toBeInTheDocument();
+    expect(container.querySelector('.sr-channel-assignment-list__thumbnail--fallback')).toBeInTheDocument();
+  });
+
+  it('shows category tags for a channel when provided', () => {
+    render(
+      <ChannelAssignmentList
+        channels={[makeChannel()]}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+        categoryNamesByChannelId={new Map([['channel-1', ['Gaming', 'Music']]])}
+      />,
+    );
+
+    const channelGroup = screen.getByRole('group', { name: 'All channels' });
+    expect(within(channelGroup).getByText('Gaming')).toBeInTheDocument();
+    expect(within(channelGroup).getByText('Music')).toBeInTheDocument();
+  });
+
+  it('omits tags for a channel with no known categories', () => {
+    render(
+      <ChannelAssignmentList
+        channels={[makeChannel()]}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+        categoryNamesByChannelId={new Map()}
+      />,
+    );
+
+    expect(screen.queryByText('Gaming')).not.toBeInTheDocument();
+  });
+
+  it('keeps the checkbox accessible name limited to the channel title when tags are present', () => {
+    render(
+      <ChannelAssignmentList
+        channels={[makeChannel()]}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+        categoryNamesByChannelId={new Map([['channel-1', ['Gaming', 'Music']]])}
+      />,
+    );
+
+    expect(screen.getByRole('checkbox', { name: 'Fireship' })).toBeInTheDocument();
+  });
+
+  it('omits the category filter group when no categories are known', () => {
+    render(
+      <ChannelAssignmentList
+        channels={[makeChannel()]}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('group', { name: 'Filter by category' })).not.toBeInTheDocument();
+  });
+
+  it('filters channels by a selected category', async () => {
+    const user = userEvent.setup();
+    const channels = [makeChannel(), makeChannel({ id: 'channel-2', title: 'Primeagen' })];
+    render(
+      <ChannelAssignmentList
+        channels={channels}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+        categoryNamesByChannelId={
+          new Map([
+            ['channel-1', ['Gaming']],
+            ['channel-2', ['Music']],
+          ])
+        }
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Gaming' }));
+
+    expect(screen.getByRole('checkbox', { name: 'Fireship' })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: 'Primeagen' })).not.toBeInTheDocument();
+  });
+
+  it('matches channels with any selected category when multiple are chosen', async () => {
+    const user = userEvent.setup();
+    const channels = [
+      makeChannel(),
+      makeChannel({ id: 'channel-2', title: 'Primeagen' }),
+      makeChannel({ id: 'channel-3', title: 'NetworkChuck' }),
+    ];
+    render(
+      <ChannelAssignmentList
+        channels={channels}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+        categoryNamesByChannelId={
+          new Map([
+            ['channel-1', ['Gaming']],
+            ['channel-2', ['Music']],
+            ['channel-3', ['Tech']],
+          ])
+        }
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Gaming' }));
+    await user.click(screen.getByRole('button', { name: 'Music' }));
+
+    expect(screen.getByRole('checkbox', { name: 'Fireship' })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Primeagen' })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: 'NetworkChuck' })).not.toBeInTheDocument();
+  });
+
+  it('clicking a selected category chip again clears that filter', async () => {
+    const user = userEvent.setup();
+    const channels = [makeChannel(), makeChannel({ id: 'channel-2', title: 'Primeagen' })];
+    render(
+      <ChannelAssignmentList
+        channels={channels}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+        categoryNamesByChannelId={
+          new Map([
+            ['channel-1', ['Gaming']],
+            ['channel-2', ['Music']],
+          ])
+        }
+      />,
+    );
+
+    const gamingChip = screen.getByRole('button', { name: 'Gaming' });
+    await user.click(gamingChip);
+    expect(gamingChip).toHaveAttribute('aria-pressed', 'true');
+
+    await user.click(gamingChip);
+
+    expect(gamingChip).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('checkbox', { name: 'Primeagen' })).toBeInTheDocument();
+  });
+
+  it('combines the text filter and category filter', async () => {
+    const user = userEvent.setup();
+    const channels = [
+      makeChannel(),
+      makeChannel({ id: 'channel-2', title: 'Fireship Clips' }),
+    ];
+    render(
+      <ChannelAssignmentList
+        channels={channels}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+        categoryNamesByChannelId={
+          new Map([
+            ['channel-1', ['Gaming']],
+            ['channel-2', ['Music']],
+          ])
+        }
+      />,
+    );
+
+    await user.type(screen.getByLabelText('Filter channels'), 'fireship');
+    await user.click(screen.getByRole('button', { name: 'Gaming' }));
+
+    expect(screen.getByRole('checkbox', { name: 'Fireship' })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: 'Fireship Clips' })).not.toBeInTheDocument();
+  });
+
+  it('shows a category-specific empty state when a category filter matches nothing on its own', async () => {
+    const user = userEvent.setup();
+    const channels = [makeChannel(), makeChannel({ id: 'channel-2', title: 'Primeagen' })];
+    render(
+      <ChannelAssignmentList
+        channels={channels}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+        categoryNamesByChannelId={new Map([['channel-1', ['Gaming']]])}
+      />,
+    );
+
+    await user.type(screen.getByLabelText('Filter channels'), 'prime');
+    await user.click(screen.getByRole('button', { name: 'Gaming' }));
+
+    expect(screen.getByRole('heading', { name: "No channels match 'prime'" })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+  });
+
   it('announces the visible result count for assistive tech', async () => {
     const user = userEvent.setup();
     const channels = [makeChannel(), makeChannel({ id: 'channel-2', title: 'Primeagen' })];
