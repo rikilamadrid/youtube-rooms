@@ -8,6 +8,7 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ### Added
 
+- `src/services/youtubeAuth.ts`: read-only YouTube sign-in (`youtube.readonly` scope) using the Google Identity Services token client — no backend, no client secret, no persisted refresh token. Access tokens are cached in memory and silently reissued on expiry via GIS while the user has an active Google session. Exposes `connectYoutubeAccount`, `getYoutubeAccessToken`, `isYoutubeConnected`, `disconnectYoutubeAccount`, and a typed `YoutubeAuthError` (`not-configured` / `popup-closed` / `access-denied` / `network` / `unknown`) so callers can distinguish auth failure modes. Unit tests mock the GIS global; no live network calls. Requires a `VITE_GOOGLE_CLIENT_ID` env var, documented in `.env.example`. First sub-branch of feature 18 (YouTube API integration).
 - README "Deployment & CI/CD" section: documents how GitHub Actions CI (`typecheck`/`lint`/`test`/`build`/`build-storybook`) stays the correctness gate while Vercel preview/production deployments are additive, one-time Vercel project connection steps (zero-config Vite detection, no `vercel.json` needed), manual branch-protection guidance, and Vite's `VITE_`-prefixed environment variable handling ahead of Build Phase 5's YouTube API keys.
 
 - Initial project documentation for YouTube Subscription Rooms.
