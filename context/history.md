@@ -4,6 +4,17 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-10 — Feature 17: YouTube API Exploration Spike
+
+- Time-boxed research spike validating the planned YouTube Data API v3 sync strategy (OAuth read-only scope → `subscriptions.list` → `channels.list` → `playlistItems.list`) against the real API, exercised via a throwaway, non-merged, gitignored script (`scratch/youtube-api-spike/`).
+- Confirmed real quota costs: 1 unit each for `subscriptions.list`/`channels.list` (batchable up to 50 ids), 1 unit per channel for `playlistItems.list` (not batchable — the real quota cost driver, scaling linearly with subscription count).
+- Identified two type gaps for feature 18: `SubscriptionChannel.topicTags` has no API source and must stay user/local-only (neither endpoint returns display-ready topic tags); `VideoSummary.duration` isn't present in `playlistItems.list` responses at all and requires an additional batched `videos.list` call not in the original plan.
+- Confirmed PKCE loopback OAuth (not deprecated OOB) works cleanly for a Desktop-app OAuth client; OAuth consent screen branding fields are unnecessary in Testing mode.
+- Deferred autoplay/embed IFrame Player validation to feature 18 as low-risk, well-documented browser behavior — not exercised in this spike.
+- Full findings recorded in `context/features/17-youtube-api-exploration-spike.md`. No production code, secrets, or `src/` changes.
+- Verified `typecheck` and `test` (157 tests) pass with no accidental changes to tracked source.
+- Landed via PR #22.
+
 ### 2026-07-11 — Feature 16: CI/CD And Vercel Preview Polish
 
 - Confirmed the Vercel project is connected to the repo with zero-config Vite detection (no `vercel.json` needed), automatic PR preview deployments, and automatic production redeploys on merge to `main` — verified via passing Vercel checks on PR #20 and the live production deployment.
