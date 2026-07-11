@@ -4,6 +4,15 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-11 — Feature 18-4: YouTube Wire Data (narrowed scope) + Feature 18 wrap-up
+
+- Added `YoutubeSyncProvider`/`useYoutubeSyncContext` (`src/hooks/`): lifts the single `useYoutubeSync` instance above the router so connection status and synced channels/videos survive navigating between routes instead of resetting on every mount. `SettingsPage` now reads from this shared context instead of calling the hook directly.
+- Added the read-only `/channels` route (`ChannelsPage`): a reverse-chronological feed of every synced channel's recent videos rendered through the existing `VideoFeed`/`VideoCard` components unchanged — proving the real-data pipeline (YouTube → normalization → components) works. Shows a connect prompt when disconnected; keeps showing previously synced videos alongside a calm error banner if a later re-sync fails, rather than discarding them (a real bug caught while writing tests). Made `VideoFeed.onAddToQueue` optional so a read-only feed can omit the queue action.
+- **Scope change discovered before implementation**: the original plan for 18-4 — "wire real data into dashboard/room-detail/queue" — turned out to depend on a room-channel assignment UI that doesn't exist (`mockRooms.ts`'s `channelIds` are hardcoded mock IDs with no way to assign real synced channels). Narrowed 18-4 to prove the data pipeline via `/channels` instead; the dashboard, room detail, and watch queue intentionally remain on mock data. The missing prerequisite is now its own spec: `context/features/19-room-channel-assignment.md`.
+- Verified `typecheck`, `lint`, `test` (36 files, 201 tests) all pass, plus a manual headless-browser walkthrough (home → Channels → connect prompt → Settings → back to Channels → home), zero console errors.
+- Landed via PR #27.
+- **Feature 18 (YouTube API Integration) is now complete across its four planned sub-branches** (18-1 auth, 18-2 fetch/normalize, 18-3 settings UI, 18-4 wire data): read-only OAuth sign-in, subscriptions/uploads/videos fetch with normalization, a settings surface with calm error handling, and a proven real-data render path. The original spec's acceptance criterion of assigning real channels to rooms was not met as scoped — that work continues under feature 19.
+
 ### 2026-07-11 — Feature 18-3: YouTube Settings UI
 
 - Added `useYoutubeSync` (`src/hooks/`): a `disconnected`/`connecting`/`connected`/`syncing`/`error` status machine wrapping `youtubeAuth`/`youtubeApi` — `connect()` requests account access then runs an initial sync, `sync()` re-fetches subscribed channels and each channel's recent uploads, `disconnect()` revokes access and clears synced data. Normalizes both `YoutubeAuthError` and `YoutubeApiError` into one typed `YoutubeSyncError` shape so the UI shows a single calm, specific message regardless of failure source.
