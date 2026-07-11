@@ -4,6 +4,15 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-11 — Feature 18-3: YouTube Settings UI
+
+- Added `useYoutubeSync` (`src/hooks/`): a `disconnected`/`connecting`/`connected`/`syncing`/`error` status machine wrapping `youtubeAuth`/`youtubeApi` — `connect()` requests account access then runs an initial sync, `sync()` re-fetches subscribed channels and each channel's recent uploads, `disconnect()` revokes access and clears synced data. Normalizes both `YoutubeAuthError` and `YoutubeApiError` into one typed `YoutubeSyncError` shape so the UI shows a single calm, specific message regardless of failure source.
+- Added the `/settings` route (`SettingsPage`): connection status via `Badge`, last-synced timestamp, synced channel/video counts, connect/sync/disconnect actions via `Button`, errors announced through `role="alert"`. Wired into `App.tsx` with a "Settings" nav link added to `AppShell`.
+- Third sub-branch of feature 18 (YouTube API integration); no wiring into the dashboard/room-detail/queue yet (deferred to 18-4). Manual sync only, no polling.
+- Unit tests for the hook (11 cases, mocking `youtubeAuth`/`youtubeApi`) and the page (4 cases, mocking the hook) — no live network calls.
+- Verified `typecheck`, `lint`, `test` (34 files, 192 tests) all pass, plus a manual headless-browser walkthrough (nav link → `/settings` → connect → calm "not configured" error surfaced via the alert region, zero console errors).
+- Landed via PR #26.
+
 ### 2026-07-10 — Feature 17: YouTube API Exploration Spike
 
 - Time-boxed research spike validating the planned YouTube Data API v3 sync strategy (OAuth read-only scope → `subscriptions.list` → `channels.list` → `playlistItems.list`) against the real API, exercised via a throwaway, non-merged, gitignored script (`scratch/youtube-api-spike/`).

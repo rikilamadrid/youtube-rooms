@@ -10,8 +10,8 @@ In Progress
 
 1. `feature/18-1-youtube-auth` — OAuth read-only sign-in service + token storage/refresh (`src/services/youtubeAuth.ts`) **(merged)**
 2. `feature/18-2-youtube-api-fetch` — `youtubeApi.ts` (subscriptions/channels/playlistItems/videos calls) + `normalizeYoutubeData.ts`, with unit tests on fixtures **(merged)**
-3. `feature/18-3-youtube-settings-ui` — `/settings` surface + `useYoutubeSync` hook, sync status UI, error-state copy **(in progress)**
-4. `feature/18-4-youtube-wire-data` — wire real data into existing dashboard/room-detail/queue components, decide mock-data fallback strategy, final CHANGELOG entry
+3. `feature/18-3-youtube-settings-ui` — `/settings` surface + `useYoutubeSync` hook, sync status UI, error-state copy **(merged)**
+4. `feature/18-4-youtube-wire-data` — wire real data into existing dashboard/room-detail/queue components, decide mock-data fallback strategy, final CHANGELOG entry **(next)**
 
 Each sub-branch gets its own PR per the normal workflow (branch → implement → test → changelog → ask before commit → ask before push → ask before merge).
 
