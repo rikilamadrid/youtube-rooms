@@ -4,6 +4,14 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-11 — Feature 20: Room Detail Navigation
+
+- Added a reusable `Tabs` molecule (`src/components/molecules/Tabs/`): a WAI-ARIA tablist widget with roving `tabindex` and Left/Right/Home/End keyboard support, panels rendered by the caller.
+- `RoomDetailPage` now splits Channels/Videos/Queue into distinct tab panels instead of one long stacked scroll; the room header (name, description, channel-count badge, edit/delete) stays visible above the tabs regardless of active section.
+- Active section is tracked via a `?section=` query param (`channels`/`videos`/`queue`, defaulting to `videos`) for deep-linking; switching sections moves focus to the new panel, following `AppShell`'s existing route-change focus-management precedent.
+- `ChannelAssignmentList`, `VideoFeed`, and `WatchQueuePanel` are unchanged — page-level layout change only.
+- Verified `typecheck`, `lint`, `test` (44 files, 252 tests), and `build` all pass, plus a manual headless-browser walkthrough (create room → switch tabs by click and by keyboard → deep link to `?section=queue`), zero console errors.
+
 ### 2026-07-11 — Feature 19: Room/Channel Assignment
 
 - Added `src/utils/roomStorage.ts` (`localStorage`-backed load/save of `Room[]`, tolerant of missing/malformed data) and `src/hooks/useRooms.ts` (create/update/delete a room, assign/unassign channels, persisting every mutation), closing the prerequisite gap identified while scoping feature 18-4.
