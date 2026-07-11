@@ -25,16 +25,14 @@
   max-width: 60ch;
 }
 
-.sr-room-detail__channels-heading {
-  margin-bottom: var(--sr-space-4);
+.sr-room-detail__panel {
+  margin-top: var(--sr-space-6);
 }
 
-.sr-room-detail__feed-heading {
-  margin-top: var(--sr-space-8);
-  margin-bottom: var(--sr-space-4);
+.sr-room-detail__panel:focus-visible {
+  outline: none;
 }
 
-.sr-room-detail__queue-heading {
-  margin-top: var(--sr-space-8);
+.sr-room-detail__section-heading {
   margin-bottom: var(--sr-space-4);
 }
