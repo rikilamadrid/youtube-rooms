@@ -78,6 +78,51 @@ beforeEach(() => {
 });
 
 describe('RoomDetailPage', () => {
+  it('renders a tablist for switching between Channels, Videos, and Queue', () => {
+    const room = makeRoom();
+    saveRooms([room]);
+    stubSync();
+
+    renderAtRoom(room.id);
+
+    const tablist = screen.getByRole('tablist', { name: 'Room sections' });
+    expect(within(tablist).getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
+      'Channels',
+      'Videos',
+      'Queue',
+    ]);
+  });
+
+  it('shows the Videos section by default', () => {
+    const room = makeRoom();
+    saveRooms([room]);
+    stubSync();
+
+    renderAtRoom(room.id);
+
+    expect(screen.getByRole('tab', { name: 'Videos' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('heading', { level: 2, name: 'Latest videos' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 2, name: 'Channels' })).not.toBeInTheDocument();
+  });
+
+  it('switches sections when a tab is activated', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom();
+    saveRooms([room]);
+    stubSync();
+
+    renderAtRoom(room.id);
+
+    await user.click(screen.getByRole('tab', { name: 'Channels' }));
+    expect(screen.getByRole('tab', { name: 'Channels' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('heading', { level: 2, name: 'Channels' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 2, name: 'Latest videos' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('tab', { name: 'Queue' }));
+    expect(screen.getByRole('tab', { name: 'Queue' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('heading', { level: 2, name: 'Your queue' })).toBeInTheDocument();
+  });
+
   it('renders the matching room name, description, and sorted videos', () => {
     const room = makeRoom({ channelIds: ['channel-fireship'] });
     saveRooms([room]);
@@ -136,12 +181,14 @@ describe('RoomDetailPage', () => {
     expect(screen.getAllByText('Fireship').length).toBeGreaterThan(0);
   });
 
-  it('renders an empty queue state', () => {
+  it('renders an empty queue state', async () => {
+    const user = userEvent.setup();
     const room = makeRoom();
     saveRooms([room]);
     stubSync();
 
     renderAtRoom(room.id);
+    await user.click(screen.getByRole('tab', { name: 'Queue' }));
 
     expect(screen.getByRole('heading', { name: 'Your queue is empty' })).toBeInTheDocument();
   });
@@ -159,6 +206,7 @@ describe('RoomDetailPage', () => {
     const addButton = within(feed).getByRole('button', { name: `Add ${video.title} to queue` });
 
     await user.click(addButton);
+    await user.click(screen.getByRole('tab', { name: 'Queue' }));
 
     const queuePanel = screen.getByRole('list', { name: 'Your queue' });
     expect(within(queuePanel).getAllByText(video.title)).toHaveLength(1);
@@ -179,6 +227,7 @@ describe('RoomDetailPage', () => {
     stubSync({ channels: [makeChannel()], videos: [] });
 
     renderAtRoom(room.id);
+    await user.click(screen.getByRole('tab', { name: 'Channels' }));
 
     const checkbox = screen.getByRole('checkbox', { name: 'Fireship' });
     expect(checkbox).not.toBeChecked();
@@ -198,6 +247,7 @@ describe('RoomDetailPage', () => {
     stubSync({ status: 'disconnected', channels: [] });
 
     renderAtRoom(room.id);
+    await user.click(screen.getByRole('tab', { name: 'Channels' }));
 
     await user.click(screen.getByRole('button', { name: 'Go to Settings' }));
     expect(screen.getByText('Settings placeholder')).toBeInTheDocument();

@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Badge } from '../../components/atoms/Badge/Badge';
 import { Button } from '../../components/atoms/Button/Button';
 import { RoomFormDialog } from '../../components/molecules/RoomFormDialog/RoomFormDialog';
+import { Tabs, type TabItem } from '../../components/molecules/Tabs/Tabs';
 import { ChannelAssignmentList } from '../../components/organisms/ChannelAssignmentList/ChannelAssignmentList';
 import { VideoFeed } from '../../components/organisms/VideoFeed/VideoFeed';
 import { WatchQueuePanel } from '../../components/organisms/WatchQueuePanel/WatchQueuePanel';
@@ -15,6 +16,20 @@ import './RoomDetailPage.css';
 
 function emptyQueueForRoom(roomId: string): WatchQueue {
   return { id: `queue-${roomId}`, roomId, videoIds: [] };
+}
+
+type SectionId = 'channels' | 'videos' | 'queue';
+
+const SECTIONS: TabItem[] = [
+  { id: 'channels', label: 'Channels', panelId: 'panel-channels' },
+  { id: 'videos', label: 'Videos', panelId: 'panel-videos' },
+  { id: 'queue', label: 'Queue', panelId: 'panel-queue' },
+];
+
+const DEFAULT_SECTION: SectionId = 'videos';
+
+function isSectionId(value: string | null): value is SectionId {
+  return value === 'channels' || value === 'videos' || value === 'queue';
 }
 
 /**
@@ -34,6 +49,29 @@ export function RoomDetailPage() {
     room ? emptyQueueForRoom(room.id) : null,
   );
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawSection = searchParams.get('section');
+  const activeSection: SectionId = isSectionId(rawSection) ? rawSection : DEFAULT_SECTION;
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previousSection = useRef<SectionId | null>(null);
+
+  useEffect(() => {
+    if (previousSection.current !== null && previousSection.current !== activeSection) {
+      panelRef.current?.focus();
+    }
+    previousSection.current = activeSection;
+  }, [activeSection]);
+
+  function handleSectionChange(id: string) {
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.set('section', id);
+        return next;
+      },
+      { replace: true },
+    );
+  }
 
   if (!room || !queue) {
     return (
@@ -109,28 +147,67 @@ export function RoomDetailPage() {
           {channelCount === 0 ? 'No channels yet' : `${channelCount} channel${channelCount === 1 ? '' : 's'}`}
         </Badge>
       </header>
-      <h2 className="sr-room-detail__channels-heading">Channels</h2>
-      <ChannelAssignmentList
-        channels={channels}
-        assignedChannelIds={room.channelIds}
-        onAssign={(channelId) => assignChannel(room.id, channelId)}
-        onUnassign={(channelId) => unassignChannel(room.id, channelId)}
-        onConnectAccount={() => navigate('/settings')}
+      <Tabs
+        label="Room sections"
+        tabs={SECTIONS}
+        activeTabId={activeSection}
+        onTabChange={handleSectionChange}
       />
-      <h2 className="sr-room-detail__feed-heading">Latest videos</h2>
-      <VideoFeed
-        items={items}
-        onAddToQueue={handleAddToQueue}
-        emptyStateTitle={emptyStateTitle}
-        emptyStateDescription={emptyStateDescription}
-      />
-      <h2 className="sr-room-detail__queue-heading">Your queue</h2>
-      <WatchQueuePanel
-        queue={queue}
-        items={queueItems}
-        onRemoveFromQueue={handleRemoveFromQueue}
-        onSetActive={handleSetActive}
-      />
+      {activeSection === 'channels' ? (
+        <div
+          id="panel-channels"
+          role="tabpanel"
+          aria-labelledby="tab-channels"
+          tabIndex={-1}
+          ref={panelRef}
+          className="sr-room-detail__panel"
+        >
+          <h2 className="sr-room-detail__section-heading">Channels</h2>
+          <ChannelAssignmentList
+            channels={channels}
+            assignedChannelIds={room.channelIds}
+            onAssign={(channelId) => assignChannel(room.id, channelId)}
+            onUnassign={(channelId) => unassignChannel(room.id, channelId)}
+            onConnectAccount={() => navigate('/settings')}
+          />
+        </div>
+      ) : null}
+      {activeSection === 'videos' ? (
+        <div
+          id="panel-videos"
+          role="tabpanel"
+          aria-labelledby="tab-videos"
+          tabIndex={-1}
+          ref={panelRef}
+          className="sr-room-detail__panel"
+        >
+          <h2 className="sr-room-detail__section-heading">Latest videos</h2>
+          <VideoFeed
+            items={items}
+            onAddToQueue={handleAddToQueue}
+            emptyStateTitle={emptyStateTitle}
+            emptyStateDescription={emptyStateDescription}
+          />
+        </div>
+      ) : null}
+      {activeSection === 'queue' ? (
+        <div
+          id="panel-queue"
+          role="tabpanel"
+          aria-labelledby="tab-queue"
+          tabIndex={-1}
+          ref={panelRef}
+          className="sr-room-detail__panel"
+        >
+          <h2 className="sr-room-detail__section-heading">Your queue</h2>
+          <WatchQueuePanel
+            queue={queue}
+            items={queueItems}
+            onRemoveFromQueue={handleRemoveFromQueue}
+            onSetActive={handleSetActive}
+          />
+        </div>
+      ) : null}
       <RoomFormDialog
         open={isEditOpen}
         mode="edit"
