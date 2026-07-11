@@ -1,36 +1,24 @@
-# Current Feature: Accessibility And Responsive QA Pass
+# Current Feature
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-Complete — pending review/commit
+<!-- Not Started | In Progress | Complete -->
 
 ## Goals
 
-- Audit keyboard navigation across the full app: dashboard → room detail → queue, including all interactive components (`Button`, `Card`-as-link, `RoomCard`, `VideoCard` actions, queue controls).
-- Audit focus visibility and order across route transitions (dashboard → room detail) and within components with multiple interactive elements (queue rows).
-- Audit color contrast for all token-driven color combinations actually in use (text on surface, badges, focus rings, disabled states) against WCAG AA at minimum.
-- Audit semantic structure: heading hierarchy per page, landmark usage (header/main/nav), list semantics for room grids and video/queue lists.
-- Audit `prefers-reduced-motion` behavior across every component that uses motion tokens.
-- Audit touch target sizing on real mobile viewport widths (not just Storybook's simulated viewport) for every interactive element.
-- Run a responsive sweep at defined breakpoints (mobile ~375px, tablet ~768px, desktop ~1280px) for the dashboard, room detail, and queue panel, fixing any layout breakage found.
-- Record findings and fixes; where a fix is non-trivial or out of scope, document it as a follow-up rather than silently skipping it.
+<!-- Bullet points of what success looks like -->
 
 ## Notes
 
-- Spec: `context/features/15-accessibility-responsive-qa.md`
-- Suggested branch: `feature/15-accessibility-responsive-qa`
-- Suggested commit: `fix: accessibility and responsive qa pass across design system and shell`
-- Out of scope: new features/components, automated visual regression tooling (e.g., Chromatic), exhaustive screen-reader OS/browser matrix testing (spot-check with one screen reader, e.g. VoiceOver, is sufficient).
-- This is a fix-what's-found pass, not new UX — verify and repair against `context/project-overview.md`'s Accessibility and UX Principles sections.
-- Scope each fix narrowly per `context/coding-standards.md` — don't refactor unrelated areas.
-- Acceptance criteria include a written audit summary (PR description or appended to the spec file) and all of `npm run test`, `npm run build`, `npm run build-storybook` passing, plus a `CHANGELOG.md` entry under `## [Unreleased]`.
+<!-- Additional context, constraints, or details from spec -->
 
 ---
 
 ## Recently landed
 
+- Feature 15 — Accessibility And Responsive QA Pass (2026-07-10): cross-cutting a11y/responsive audit over features 01-14 covering keyboard navigation, focus visibility/order, color contrast, semantic structure, `prefers-reduced-motion`, touch target sizing, and a responsive sweep at 375/768/1280px. Found and fixed two real defects: route changes lost keyboard focus (`AppShell` now moves focus to `<main>` on navigation) and `VideoCard` action buttons were undersized for touch (`Button`'s `sm` size bumped to a 44px minimum target). Contrast, reduced-motion handling, semantic structure, and responsive layout were audited and found already compliant — no changes needed. Findings and fix rationale recorded in `context/features/15-accessibility-responsive-qa.md`. Verified `typecheck`, `lint`, `test` (157 tests), `build`, and `build-storybook` all pass.
 - Feature 14 — Watch Queue UI (2026-07-10): `RoomDetailPage` now owns local `WatchQueue` state, seeded from `mockQueues` for the current room, wiring each `VideoCard`'s "Add to queue" action to real (de-duplicated) queue state in place of the feature-13 placeholder. Added `addToQueue`/`removeFromQueue`/`setActiveVideo` (`src/utils/watchQueue.ts`) as small, unit-tested pure functions. Extended `VideoCard` with optional `onRemoveFromQueue`/`onSetActive`/`isActive` props so the same card renders both a feed row and a queue row (with a non-color-only "Now playing" indicator) without duplicating markup. Added the `WatchQueuePanel` organism (`src/components/organisms/WatchQueuePanel/`), rendering the queue as an ordered list of `VideoCard`s or an `EmptyState` guiding back to the feed. Verified `typecheck`, `lint`, `test` (157 tests), `build`, `build-storybook`, plus a manual Playwright pass confirming add/remove/set-active behavior in the browser with no console errors. Landed via PR #18.
 - Feature 13 — Room Detail Layout (2026-07-10): replaced the feature-12 placeholder `/rooms/:roomId` page with a real room detail view. Added the `resolveRoomVideoFeed` utility (`src/utils/`) that resolves a room's `channelIds` to their videos from `mockVideos`, attaches each video's resolved channel title, and sorts by `publishedAt` descending. Added the `VideoFeed` organism (`src/components/organisms/VideoFeed/`), rendering a mobile-first, single-column list of `VideoCard`s or a caller-driven `EmptyState`. `RoomDetailPage` now renders a room header (name, description, channel-count `Badge`) and a "Latest videos" `VideoFeed`, with three distinct states: room not found, room with no channels, and room with channels but no recent videos; each `VideoCard`'s "Add to queue" action is wired to a placeholder console-logged callback (real queue is feature 14). Added a `room-jazz-theory` mock room to cover the "channels assigned but no videos" edge case missing from feature 11's fixtures. Verified `typecheck`, `lint`, `test` (130 jsdom + 50 real-Chromium Storybook interaction tests), `build`, and `build-storybook` all pass. Landed via PR #17.
 - Feature 12 — Dashboard Shell (2026-07-09): introduced client-side routing (`react-router-dom`) via `App.tsx` rendering a `BrowserRouter` with a `/` dashboard route and a `/rooms/:roomId` route, both nested under a shared `AppShell` layout. Built `AppShell` (`src/app/AppShell.tsx`/`.css`) as a minimal, token-driven header (brand link back to `/`) + content container, rendering route content via `Outlet`. Built `DashboardPage` (`src/app/routes/DashboardPage.tsx`) as a thin composition of `RoomGrid` with `mockRooms`, navigating to `/rooms/:roomId` via `useNavigate` on room selection. Built `RoomDetailPage` (`src/app/routes/RoomDetailPage.tsx`) as a minimal placeholder that resolves the room from `mockRooms` by `useParams`, showing the room name or a "Room not found" state with a link back to `/` — full detail UI is feature 13. Verified `typecheck`, `lint`, `test`, and `build` all pass. Landed via PR #16.
