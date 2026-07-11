@@ -1,18 +1,28 @@
-# Current Feature
+# Current Feature: CI/CD And Vercel Preview Polish
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-<!-- Not Started | In Progress | Complete -->
+Complete
 
 ## Goals
 
-<!-- Bullet points of what success looks like -->
+- Connect the repo to a Vercel project so `main` deploys to a stable production URL, with no manual redeploy steps.
+- Every PR automatically gets a working preview deployment (app, and Storybook if straightforward — otherwise document the chosen approach).
+- Vercel's build command matches `npm run build` (and a combined step for `build-storybook` if applicable).
+- GitHub Actions CI (feature 01) stays the source of truth for correctness gating (typecheck/lint/test/build) — Vercel preview is additive, not a replacement.
+- Document branch-protection guidance (PRs should have passing CI before merge) — doesn't need to be automation-enforced.
+- Update `README.md` with the live production URL(s) and a short "how CI/CD works" note.
+- Document Vite env var handling (`VITE_`-prefixed vars) even though no real secrets are needed yet.
 
 ## Notes
 
-<!-- Additional context, constraints, or details from spec -->
+- Spec: `context/features/16-cicd-vercel-preview-polish.md`
+- Branch: `feature/16-cicd-vercel-polish`
+- Out of scope: YouTube API env vars/secrets (Build Phase 5, features 17-18); custom domains/analytics/monitoring; automated branch-protection rule enforcement via API/script unless the user prefers that over manual GitHub UI config.
+- Connecting the actual Vercel account/project requires the user's direct action (Vercel dashboard/OAuth) — documented the setup steps and build settings here instead of assuming that connection is live. README's production URL is left as a placeholder for the user to fill in once connected.
+- No `vercel.json` — Vercel's zero-config Vite detection covers `npm run build`; nothing here requires overriding it.
 
 ---
 

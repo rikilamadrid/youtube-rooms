@@ -8,6 +8,8 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ### Added
 
+- README "Deployment & CI/CD" section: documents how GitHub Actions CI (`typecheck`/`lint`/`test`/`build`/`build-storybook`) stays the correctness gate while Vercel preview/production deployments are additive, one-time Vercel project connection steps (zero-config Vite detection, no `vercel.json` needed), manual branch-protection guidance, and Vite's `VITE_`-prefixed environment variable handling ahead of Build Phase 5's YouTube API keys.
+
 - Initial project documentation for YouTube Subscription Rooms.
 - AI-assisted development workflow for Component Driven Development and Test Driven Development.
 - Planned React, TypeScript, Vite, Storybook, CSS variables, Vitest, React Testing Library, GitHub Actions, and Vercel stack.
