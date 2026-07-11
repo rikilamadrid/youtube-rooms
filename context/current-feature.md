@@ -1,24 +1,31 @@
-# Current Feature
+# Current Feature: Accessibility And Responsive QA Pass
 
 Use this file as the live tracker for what is active now. Keep it lean. When a feature lands, summarize the completed work in `context/history.md` and move this file forward to the next task.
 
 ## Status
 
-<!-- Not Started | In Progress | Complete -->
+Complete — pending review/commit
 
 ## Goals
 
-<!-- Bullet points of what success looks like -->
+- Audit keyboard navigation across the full app: dashboard → room detail → queue, including all interactive components (`Button`, `Card`-as-link, `RoomCard`, `VideoCard` actions, queue controls).
+- Audit focus visibility and order across route transitions (dashboard → room detail) and within components with multiple interactive elements (queue rows).
+- Audit color contrast for all token-driven color combinations actually in use (text on surface, badges, focus rings, disabled states) against WCAG AA at minimum.
+- Audit semantic structure: heading hierarchy per page, landmark usage (header/main/nav), list semantics for room grids and video/queue lists.
+- Audit `prefers-reduced-motion` behavior across every component that uses motion tokens.
+- Audit touch target sizing on real mobile viewport widths (not just Storybook's simulated viewport) for every interactive element.
+- Run a responsive sweep at defined breakpoints (mobile ~375px, tablet ~768px, desktop ~1280px) for the dashboard, room detail, and queue panel, fixing any layout breakage found.
+- Record findings and fixes; where a fix is non-trivial or out of scope, document it as a follow-up rather than silently skipping it.
 
 ## Notes
 
-<!-- Additional context, constraints, or details from spec -->
-
----
-
-## Up next
-
-- 15 — Accessibility and responsive QA pass
+- Spec: `context/features/15-accessibility-responsive-qa.md`
+- Suggested branch: `feature/15-accessibility-responsive-qa`
+- Suggested commit: `fix: accessibility and responsive qa pass across design system and shell`
+- Out of scope: new features/components, automated visual regression tooling (e.g., Chromatic), exhaustive screen-reader OS/browser matrix testing (spot-check with one screen reader, e.g. VoiceOver, is sufficient).
+- This is a fix-what's-found pass, not new UX — verify and repair against `context/project-overview.md`'s Accessibility and UX Principles sections.
+- Scope each fix narrowly per `context/coding-standards.md` — don't refactor unrelated areas.
+- Acceptance criteria include a written audit summary (PR description or appended to the spec file) and all of `npm run test`, `npm run build`, `npm run build-storybook` passing, plus a `CHANGELOG.md` entry under `## [Unreleased]`.
 
 ---
 
