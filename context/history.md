@@ -4,6 +4,21 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-11 — Feature 16: CI/CD And Vercel Preview Polish
+
+- Confirmed the Vercel project is connected to the repo with zero-config Vite detection (no `vercel.json` needed), automatic PR preview deployments, and automatic production redeploys on merge to `main` — verified via passing Vercel checks on PR #20 and the live production deployment.
+- Added a README "Deployment & CI/CD" section: production URL (`https://youtube-rooms.vercel.app`), how GitHub Actions CI (feature 01) stays the correctness gate while Vercel deployments are additive, one-time Vercel connection steps (kept for reference), manual branch-protection guidance (require CI to pass before merge, configured in GitHub Settings), and Vite's `VITE_`-prefixed env var handling ahead of Build Phase 5's YouTube API keys.
+- Verified `typecheck`, `lint`, `test` (157 tests), and `build` all pass.
+- Landed via PR #20.
+
+### 2026-07-10 — Feature 15: Accessibility And Responsive QA Pass
+
+- Cross-cutting accessibility/responsive audit over features 01-14: keyboard navigation, focus visibility/order, color contrast, semantic structure, `prefers-reduced-motion` handling, touch target sizing, and a responsive sweep at 375/768/1280px viewports.
+- Found and fixed two real defects: client-side route changes lost keyboard focus (`AppShell` now moves focus to `<main>` on navigation), and `VideoCard` action buttons were undersized for touch (`Button`'s `sm` size bumped to a 44px minimum target).
+- Contrast, reduced-motion handling, semantic structure, and responsive layout were audited and found already compliant — no changes needed there.
+- Findings and fix rationale recorded in `context/features/15-accessibility-responsive-qa.md`.
+- Verified `typecheck`, `lint`, `test` (157 tests), `build`, and `build-storybook` all pass.
+
 ### 2026-07-10 — Feature 14: Watch Queue UI
 
 - `RoomDetailPage` now owns local `WatchQueue` state, seeded from `mockQueues` for the current room (or an empty queue otherwise), and wires each `VideoCard`'s "Add to queue" action to real queue state — replacing the feature-13 console-logged placeholder.
