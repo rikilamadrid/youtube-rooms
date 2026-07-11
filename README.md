@@ -44,6 +44,35 @@ No YouTube API integration in the first milestone. Start with typed mock data so
 6. Connect the repo to Vercel.
 7. Work feature-by-feature from `context/current-feature.md`.
 
+## Deployment & CI/CD
+
+**Production:** _pending Vercel connection — add the live URL here once the project is linked (see setup steps below)._
+
+**How CI/CD works:**
+
+- GitHub Actions (`.github/workflows/ci.yml`) is the source of truth for correctness. Every push to `main` and every pull request runs `typecheck`, `lint`, `test`, `build`, and `build-storybook`.
+- Vercel deployments are additive, not a gate — they don't replace CI, they give a visual preview alongside it.
+- Once the Vercel project is connected, every pull request gets an automatic preview deployment at a unique URL (posted as a PR check/comment by the Vercel GitHub integration), and every merge to `main` redeploys production automatically. No manual redeploy step is needed either way.
+
+**Connecting Vercel (one-time, manual):**
+
+1. In the [Vercel dashboard](https://vercel.com/new), import this GitHub repository.
+2. Framework preset: Vite (auto-detected). Build command: `npm run build`. Output directory: `dist` (Vercel's defaults — no `vercel.json` override needed).
+3. No environment variables are required yet (see below).
+4. Enable the Vercel GitHub integration's PR comments so preview links show up on pull requests automatically.
+5. Storybook is not deployed separately — it's covered by CI's `build-storybook` check. Revisit a dedicated Storybook deployment (e.g. a second Vercel project pointed at `storybook-static`) if a shareable Storybook link becomes useful later.
+
+**Branch protection (recommended, configured manually in GitHub):**
+
+- Require the CI workflow to pass before merging pull requests into `main`.
+- Require branches to be up to date before merging.
+- This isn't enforced by automation in this repo — set it under the repo's Settings → Branches → Branch protection rules.
+
+**Environment variables:**
+
+- Vite only exposes env vars prefixed `VITE_` to client code (via `import.meta.env`); unprefixed vars stay server/build-only and are never bundled.
+- No real environment variables exist yet — YouTube API keys and any other secrets are out of scope until Build Phase 5 (features 17-18). When they're introduced, set them in Vercel's Project Settings → Environment Variables (scoped per Production/Preview/Development) and document the required keys here.
+
 ## Project Docs
 
 - `context/project-overview.md` — product vision, architecture, stack, data model, roadmap
