@@ -1,6 +1,12 @@
 import type { Room } from '../types/room';
 
 /**
+ * Storybook/dev-fixture data only as of feature 19 (room/channel
+ * assignment) — no route imports this anymore. Real sessions start with
+ * zero rooms via `useRooms()` (localStorage-backed); these mock rooms'
+ * channelIds only resolve against `mockChannels.ts`, not real synced
+ * channel ids, so they can't be used as runtime seed data.
+ *
  * channelIds are cross-referenced by id against mockChannels.ts. Keep ids stable.
  */
 export const mockRooms: Room[] = [

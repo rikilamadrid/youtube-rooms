@@ -1,6 +1,11 @@
 import type { WatchQueue } from '../types/queue';
 
 /**
+ * Storybook/dev-fixture data only as of feature 19 (room/channel
+ * assignment) — `RoomDetailPage` no longer seeds a room's queue from this;
+ * every room now starts with an empty queue since mock video ids don't
+ * resolve against real synced videos.
+ *
  * roomId and videoIds are cross-referenced by id against mockRooms.ts and
  * mockVideos.ts. Keep ids stable. Not every room has a queue.
  */

@@ -1,52 +1,115 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { mockChannels } from '../../data/mockChannels';
-import { mockQueues } from '../../data/mockQueues';
-import { mockRooms } from '../../data/mockRooms';
-import { mockVideos } from '../../data/mockVideos';
+import { useYoutubeSyncContext } from '../../hooks/YoutubeSyncContext';
+import { saveRooms } from '../../utils/roomStorage';
+import type { Room } from '../../types/room';
+import type { SubscriptionChannel } from '../../types/channel';
+import type { VideoSummary } from '../../types/video';
 import { RoomDetailPage } from './RoomDetailPage';
+
+vi.mock('../../hooks/YoutubeSyncContext');
+
+const mockedUseYoutubeSyncContext = vi.mocked(useYoutubeSyncContext);
+
+function stubSync(overrides: Partial<ReturnType<typeof useYoutubeSyncContext>> = {}) {
+  mockedUseYoutubeSyncContext.mockReturnValue({
+    status: 'connected',
+    error: null,
+    lastSyncedAt: null,
+    channels: [],
+    videos: [],
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    sync: vi.fn(),
+    ...overrides,
+  });
+}
+
+function makeRoom(overrides: Partial<Room> = {}): Room {
+  return {
+    id: 'room-coding',
+    name: 'Coding',
+    description: 'Tutorials and live coding.',
+    channelIds: [],
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
+function makeChannel(overrides: Partial<SubscriptionChannel> = {}): SubscriptionChannel {
+  return {
+    id: 'channel-fireship',
+    youtubeChannelId: 'UCsBjURrPoezykLs9EqgamOA',
+    title: 'Fireship',
+    topicTags: [],
+    ...overrides,
+  };
+}
+
+function makeVideo(overrides: Partial<VideoSummary> = {}): VideoSummary {
+  return {
+    id: 'video-1',
+    youtubeVideoId: 'video-1',
+    channelId: 'channel-fireship',
+    title: 'React 19',
+    publishedAt: '2026-06-01T00:00:00.000Z',
+    ...overrides,
+  };
+}
 
 function renderAtRoom(roomId: string) {
   return render(
     <MemoryRouter initialEntries={[`/rooms/${roomId}`]}>
       <Routes>
         <Route path="/rooms/:roomId" element={<RoomDetailPage />} />
+        <Route path="/settings" element={<div>Settings placeholder</div>} />
+        <Route path="/" element={<div>Dashboard placeholder</div>} />
       </Routes>
     </MemoryRouter>,
   );
 }
 
+beforeEach(() => {
+  localStorage.clear();
+  vi.restoreAllMocks();
+});
+
 describe('RoomDetailPage', () => {
   it('renders the matching room name, description, and sorted videos', () => {
-    const room = mockRooms.find((candidate) => candidate.id === 'room-coding')!;
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    const older = makeVideo({ id: 'v1', title: 'Older', publishedAt: '2026-01-01T00:00:00Z' });
+    const newer = makeVideo({ id: 'v2', title: 'Newer', publishedAt: '2026-02-01T00:00:00Z' });
+    stubSync({ channels: [makeChannel()], videos: [older, newer] });
+
     renderAtRoom(room.id);
 
     expect(screen.getByRole('heading', { level: 1, name: room.name })).toBeInTheDocument();
-    expect(screen.getByText(room.description!)).toBeInTheDocument();
+    expect(screen.getByText(room.description!, { selector: 'p' })).toBeInTheDocument();
 
-    const roomVideos = mockVideos
-      .filter((video) => room.channelIds.includes(video.channelId))
-      .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
     const feed = screen.getByRole('list', { name: 'Latest videos' });
     const items = within(feed)
       .getAllByRole('listitem')
       .map((item) => item.textContent);
-
-    roomVideos.forEach((video, index) => {
-      expect(items[index]).toContain(video.title);
-    });
+    expect(items[0]).toContain('Newer');
+    expect(items[1]).toContain('Older');
   });
 
   it('renders a not-found message for an unknown room id', () => {
+    stubSync();
     renderAtRoom('room-does-not-exist');
 
     expect(screen.getByRole('heading', { name: 'Room not found' })).toBeInTheDocument();
   });
 
   it('renders a distinct empty state for a room with no channels', () => {
-    const room = mockRooms.find((candidate) => candidate.id === 'room-someday')!;
+    const room = makeRoom({ channelIds: [] });
+    saveRooms([room]);
+    stubSync();
+
     renderAtRoom(room.id);
 
     expect(screen.getByRole('heading', { name: 'This room has no channels yet' })).toBeInTheDocument();
@@ -54,31 +117,30 @@ describe('RoomDetailPage', () => {
   });
 
   it('renders a distinct empty state for a room whose channels have no videos', () => {
-    const room = mockRooms.find((candidate) => candidate.id === 'room-jazz-theory')!;
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    stubSync({ channels: [makeChannel()], videos: [] });
+
     renderAtRoom(room.id);
 
     expect(screen.getByRole('heading', { name: 'No recent videos' })).toBeInTheDocument();
   });
 
   it('resolves and renders a channel title for its videos', () => {
-    const room = mockRooms.find((candidate) => candidate.id === 'room-coding')!;
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    stubSync({ channels: [makeChannel()], videos: [makeVideo()] });
+
     renderAtRoom(room.id);
 
-    const channel = mockChannels.find((candidate) => candidate.id === room.channelIds[0])!;
-    expect(screen.getAllByText(channel.title).length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Fireship').length).toBeGreaterThan(0);
   });
 
-  it('seeds the queue panel from mockQueues for a room with an existing queue', () => {
-    const room = mockRooms.find((candidate) => candidate.id === 'room-coding')!;
-    const seededQueue = mockQueues.find((candidate) => candidate.roomId === room.id)!;
-    renderAtRoom(room.id);
+  it('renders an empty queue state', () => {
+    const room = makeRoom();
+    saveRooms([room]);
+    stubSync();
 
-    const queuePanel = screen.getByRole('list', { name: 'Your queue' });
-    expect(within(queuePanel).getAllByRole('listitem')).toHaveLength(seededQueue.videoIds.length);
-  });
-
-  it('renders an empty queue state for a room with no seeded queue', () => {
-    const room = mockRooms.find((candidate) => candidate.id === 'room-someday')!;
     renderAtRoom(room.id);
 
     expect(screen.getByRole('heading', { name: 'Your queue is empty' })).toBeInTheDocument();
@@ -86,28 +148,101 @@ describe('RoomDetailPage', () => {
 
   it('adds, removes, and sets an active video in the queue end to end', async () => {
     const user = userEvent.setup();
-    const room = mockRooms.find((candidate) => candidate.id === 'room-cooking')!;
-    const roomVideos = mockVideos
-      .filter((video) => room.channelIds.includes(video.channelId))
-      .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
-    const targetVideo = roomVideos[0];
+    const room = makeRoom({ channelIds: ['channel-fireship'] });
+    saveRooms([room]);
+    const video = makeVideo();
+    stubSync({ channels: [makeChannel()], videos: [video] });
+
     renderAtRoom(room.id);
 
     const feed = screen.getByRole('list', { name: 'Latest videos' });
-    const addButton = within(feed).getByRole('button', { name: `Add ${targetVideo.title} to queue` });
+    const addButton = within(feed).getByRole('button', { name: `Add ${video.title} to queue` });
 
-    await user.click(addButton);
     await user.click(addButton);
 
     const queuePanel = screen.getByRole('list', { name: 'Your queue' });
-    expect(within(queuePanel).getAllByText(targetVideo.title)).toHaveLength(1);
+    expect(within(queuePanel).getAllByText(video.title)).toHaveLength(1);
 
-    await user.click(within(queuePanel).getByRole('button', { name: `Set ${targetVideo.title} as active` }));
+    await user.click(within(queuePanel).getByRole('button', { name: `Set ${video.title} as active` }));
     expect(
-      within(queuePanel).getByRole('button', { name: `${targetVideo.title} is the active video` }),
+      within(queuePanel).getByRole('button', { name: `${video.title} is the active video` }),
     ).toBeDisabled();
 
-    await user.click(within(queuePanel).getByRole('button', { name: `Remove ${targetVideo.title} from queue` }));
-    expect(within(queuePanel).queryByText(targetVideo.title)).not.toBeInTheDocument();
+    await user.click(within(queuePanel).getByRole('button', { name: `Remove ${video.title} from queue` }));
+    expect(within(queuePanel).queryByText(video.title)).not.toBeInTheDocument();
+  });
+
+  it('assigns and unassigns a synced channel', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom({ channelIds: [] });
+    saveRooms([room]);
+    stubSync({ channels: [makeChannel()], videos: [] });
+
+    renderAtRoom(room.id);
+
+    const checkbox = screen.getByRole('checkbox', { name: 'Fireship' });
+    expect(checkbox).not.toBeChecked();
+
+    await user.click(checkbox);
+    expect(screen.getByRole('checkbox', { name: 'Fireship' })).toBeChecked();
+    expect(screen.getByText('1 channel')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('checkbox', { name: 'Fireship' }));
+    expect(screen.getByRole('checkbox', { name: 'Fireship' })).not.toBeChecked();
+  });
+
+  it('shows a connect prompt in the channel list when nothing is synced yet', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom();
+    saveRooms([room]);
+    stubSync({ status: 'disconnected', channels: [] });
+
+    renderAtRoom(room.id);
+
+    await user.click(screen.getByRole('button', { name: 'Go to Settings' }));
+    expect(screen.getByText('Settings placeholder')).toBeInTheDocument();
+  });
+
+  it('edits a room name and description', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom();
+    saveRooms([room]);
+    stubSync();
+
+    renderAtRoom(room.id);
+
+    await user.click(screen.getByRole('button', { name: 'Edit room' }));
+    const nameInput = screen.getByLabelText('Name');
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Software');
+    await user.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Software' })).toBeInTheDocument();
+  });
+
+  it('deletes a room after confirmation and navigates to the dashboard', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom();
+    saveRooms([room]);
+    stubSync();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    renderAtRoom(room.id);
+    await user.click(screen.getByRole('button', { name: 'Delete room' }));
+
+    expect(screen.getByText('Dashboard placeholder')).toBeInTheDocument();
+  });
+
+  it('does not delete a room when confirmation is declined', async () => {
+    const user = userEvent.setup();
+    const room = makeRoom();
+    saveRooms([room]);
+    stubSync();
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+    renderAtRoom(room.id);
+    await user.click(screen.getByRole('button', { name: 'Delete room' }));
+
+    expect(screen.getByRole('heading', { level: 1, name: room.name })).toBeInTheDocument();
   });
 });

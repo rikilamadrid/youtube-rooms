@@ -4,6 +4,14 @@ Append-only log of completed work. Keep `context/current-feature.md` focused on 
 
 ## Completed work
 
+### 2026-07-11 — Feature 19: Room/Channel Assignment
+
+- Added `src/utils/roomStorage.ts` (`localStorage`-backed load/save of `Room[]`, tolerant of missing/malformed data) and `src/hooks/useRooms.ts` (create/update/delete a room, assign/unassign channels, persisting every mutation), closing the prerequisite gap identified while scoping feature 18-4.
+- Added `RoomFormDialog` (molecule, native `<dialog>`-based create/edit form for name/description) and `ChannelAssignmentList` (organism, checkbox list of the user's synced channels from `useYoutubeSyncContext()`, with its own empty state when nothing is synced yet).
+- `DashboardPage` now creates rooms via `useRooms()` instead of `mockRooms`; `RoomDetailPage` sources its room, edit/delete controls, channel assignment, and video feed from `useRooms()` + `useYoutubeSyncContext()` instead of `mockRooms`/`mockChannels`/`mockVideos`/`mockQueues`. `RoomGrid`/`RoomCard`/`VideoFeed`/`WatchQueuePanel` are unchanged.
+- `mockRooms.ts`/`mockChannels.ts`/`mockVideos.ts`/`mockQueues.ts` demoted to Storybook/dev-fixture data only (no runtime imports) — real sessions start with zero rooms and empty watch queues rather than seeding from mock data, since mock channel ids never match real synced channel ids.
+- Verified `typecheck`, `test` (42 files, 239 tests), and `build` all pass.
+
 ### 2026-07-11 — Feature 18-4: YouTube Wire Data (narrowed scope) + Feature 18 wrap-up
 
 - Added `YoutubeSyncProvider`/`useYoutubeSyncContext` (`src/hooks/`): lifts the single `useYoutubeSync` instance above the router so connection status and synced channels/videos survive navigating between routes instead of resetting on every mount. `SettingsPage` now reads from this shared context instead of calling the hook directly.
