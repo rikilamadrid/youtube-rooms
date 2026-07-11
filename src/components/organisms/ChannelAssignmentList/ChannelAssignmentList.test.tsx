@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChannelAssignmentList } from './ChannelAssignmentList';
 import type { SubscriptionChannel } from '../../../types/channel';
@@ -106,5 +106,92 @@ describe('ChannelAssignmentList', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Fireship' }));
 
     expect(handleUnassign).toHaveBeenCalledWith('channel-1');
+  });
+
+  it('groups assigned channels separately from unassigned ones', () => {
+    const channels = [makeChannel(), makeChannel({ id: 'channel-2', title: 'Primeagen' })];
+    render(
+      <ChannelAssignmentList
+        channels={channels}
+        assignedChannelIds={['channel-1']}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+      />,
+    );
+
+    const assignedGroup = screen.getByRole('group', { name: 'Assigned' });
+    const unassignedGroup = screen.getByRole('group', { name: 'Unassigned' });
+
+    expect(within(assignedGroup).getByRole('checkbox', { name: 'Fireship' })).toBeInTheDocument();
+    expect(within(unassignedGroup).getByRole('checkbox', { name: 'Primeagen' })).toBeInTheDocument();
+  });
+
+  it('shows a single "All channels" group when nothing is assigned', () => {
+    const channels = [makeChannel(), makeChannel({ id: 'channel-2', title: 'Primeagen' })];
+    render(
+      <ChannelAssignmentList
+        channels={channels}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('group', { name: 'All channels' })).toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: 'Assigned' })).not.toBeInTheDocument();
+  });
+
+  it('filters channels by title as the user types', async () => {
+    const user = userEvent.setup();
+    const channels = [makeChannel(), makeChannel({ id: 'channel-2', title: 'Primeagen' })];
+    render(
+      <ChannelAssignmentList
+        channels={channels}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+      />,
+    );
+
+    await user.type(screen.getByLabelText('Filter channels'), 'prime');
+
+    expect(screen.getByRole('checkbox', { name: 'Primeagen' })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: 'Fireship' })).not.toBeInTheDocument();
+  });
+
+  it('shows a distinct empty state when the filter matches nothing', async () => {
+    const user = userEvent.setup();
+    render(
+      <ChannelAssignmentList
+        channels={[makeChannel()]}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+      />,
+    );
+
+    await user.type(screen.getByLabelText('Filter channels'), 'zzz');
+
+    expect(screen.getByRole('heading', { name: "No channels match 'zzz'" })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+  });
+
+  it('announces the visible result count for assistive tech', async () => {
+    const user = userEvent.setup();
+    const channels = [makeChannel(), makeChannel({ id: 'channel-2', title: 'Primeagen' })];
+    render(
+      <ChannelAssignmentList
+        channels={channels}
+        assignedChannelIds={[]}
+        onAssign={vi.fn()}
+        onUnassign={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent('2 channels shown');
+
+    await user.type(screen.getByLabelText('Filter channels'), 'prime');
+
+    expect(screen.getByRole('status')).toHaveTextContent('1 channel shown');
   });
 });

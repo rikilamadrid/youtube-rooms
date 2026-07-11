@@ -4,9 +4,60 @@
    ============================================================ */
 
 .sr-channel-assignment-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-4);
+}
+
+.sr-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-channel-assignment-list__filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-1);
+}
+
+.sr-channel-assignment-list__filter-label {
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-sm);
+  font-weight: 600;
+  color: var(--sr-color-text-muted);
+}
+
+.sr-channel-assignment-list__filter-input {
+  width: 100%;
+  padding: var(--sr-space-2) var(--sr-space-3);
+  border: var(--sr-border-width-sm) solid var(--sr-color-border);
+  border-radius: var(--sr-radius-sm);
+  background-color: var(--sr-color-surface);
+  color: var(--sr-color-text);
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-md);
+}
+
+.sr-channel-assignment-list__filter-input:focus-visible {
+  outline: var(--sr-border-width-md) solid var(--sr-color-accent);
+  outline-offset: 2px;
+}
+
+.sr-channel-assignment-list__group {
   border: 0;
   margin: 0;
   padding: 0;
+}
+
+.sr-channel-assignment-list__group + .sr-channel-assignment-list__group {
+  margin-top: var(--sr-space-4);
 }
 
 .sr-channel-assignment-list__legend {
