@@ -1,6 +1,10 @@
 import type { VideoSummary } from '../types/video';
 
 /**
+ * Storybook/dev-fixture data only as of feature 19 (room/channel
+ * assignment) — `RoomDetailPage` sources real videos from
+ * `useYoutubeSyncContext()` instead.
+ *
  * channelId is cross-referenced by id against mockChannels.ts. Keep ids stable.
  * channel-adam-neely intentionally has no videos here (edge case: channel with
  * no recent uploads).

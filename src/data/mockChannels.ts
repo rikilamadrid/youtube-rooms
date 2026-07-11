@@ -1,6 +1,11 @@
 import type { SubscriptionChannel } from '../types/channel';
 
 /**
+ * Storybook/dev-fixture data only as of feature 19 (room/channel
+ * assignment) — `RoomDetailPage` sources real channels from
+ * `useYoutubeSyncContext()` instead. Still used as fixture data in
+ * `ChannelAssignmentList`'s stories.
+ *
  * Cross-referenced by id from mockRooms.ts (Room.channelIds) and
  * mockVideos.ts (VideoSummary.channelId). Keep ids stable.
  */

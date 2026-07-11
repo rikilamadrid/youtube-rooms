@@ -6,12 +6,31 @@
   margin-bottom: var(--sr-space-6);
 }
 
+.sr-room-detail__heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sr-space-4);
+  width: 100%;
+}
+
+.sr-room-detail__actions {
+  display: flex;
+  gap: var(--sr-space-2);
+  flex-shrink: 0;
+}
+
 .sr-room-detail__description {
   color: var(--sr-color-text-muted);
   max-width: 60ch;
 }
 
+.sr-room-detail__channels-heading {
+  margin-bottom: var(--sr-space-4);
+}
+
 .sr-room-detail__feed-heading {
+  margin-top: var(--sr-space-8);
   margin-bottom: var(--sr-space-4);
 }
 

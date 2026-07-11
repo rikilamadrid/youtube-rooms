@@ -1,0 +1,65 @@
+/* ============================================================
+   RoomFormDialog
+   Native <dialog> styled to match the design system's surfaces.
+   ============================================================ */
+
+.sr-room-form-dialog {
+  width: min(28rem, calc(100vw - var(--sr-space-8)));
+  padding: 0;
+  border: var(--sr-border-width-sm) solid var(--sr-color-border);
+  border-radius: var(--sr-radius-lg);
+  background-color: var(--sr-color-surface-raised);
+  color: var(--sr-color-text);
+  box-shadow: var(--sr-shadow-soft);
+}
+
+.sr-room-form-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.sr-room-form-dialog__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-4);
+  padding: var(--sr-space-6);
+}
+
+.sr-room-form-dialog__title {
+  margin: 0;
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-lg);
+  font-weight: 600;
+}
+
+.sr-room-form-dialog__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-1);
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-sm);
+  color: var(--sr-color-text-muted);
+}
+
+.sr-room-form-dialog__field input,
+.sr-room-form-dialog__field textarea {
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-md);
+  color: var(--sr-color-text);
+  background-color: var(--sr-color-surface);
+  border: var(--sr-border-width-sm) solid var(--sr-color-border);
+  border-radius: var(--sr-radius-sm);
+  padding: var(--sr-space-2) var(--sr-space-3);
+  resize: vertical;
+}
+
+.sr-room-form-dialog__field input:focus-visible,
+.sr-room-form-dialog__field textarea:focus-visible {
+  outline: var(--sr-border-width-md) solid var(--sr-color-accent);
+  outline-offset: 1px;
+}
+
+.sr-room-form-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sr-space-2);
+}
